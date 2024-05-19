@@ -5,7 +5,7 @@
         public int LessonId { get; set; }
 
         // メインカテゴリ
-        public string Categry { get; set; }
+        public string Category { get; set; }
 
         // 問題の題名
         public string Title { get; set; }

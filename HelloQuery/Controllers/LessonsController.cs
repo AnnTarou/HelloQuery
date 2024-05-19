@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HelloQuery.Data;
 using HelloQuery.Models;
@@ -19,139 +14,140 @@ namespace HelloQuery.Controllers
             _context = context;
         }
 
-        // GET: Lessons
-        public async Task<IActionResult> Index()
+        // GETメソッド: Lessons/Index
+        [HttpGet]
+        public async Task<IActionResult> Index(int? id)
         {
-            return View(await _context.Lesson.ToListAsync());
+            var lessons = await _context.Lesson.ToListAsync();
+
+            // idがnullまたは0のとき最初のLessonを選択
+            if (id == null || id == 0)
+            {
+                var selectedLesson = lessons.FirstOrDefault(m => m.LessonId == 1);
+                ViewBag.SelectedLesson = selectedLesson;
+
+            }
+            // idがnullでない場合、選択されたLessonを取得
+            else
+            {
+                var selectedLesson = lessons.FirstOrDefault(m => m.LessonId == id);
+                ViewBag.SelectedLesson = selectedLesson;
+
+            }
+            
+            return View(lessons);
         }
 
-        // GET: Lessons/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // 問題が選択されたときの部分ビュー作成メソッド
+        public async Task<IActionResult> SelectLesson(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
+            // JSから渡されたidをもとに、選択されたLessonを取得
             var lesson = await _context.Lesson
                 .FirstOrDefaultAsync(m => m.LessonId == id);
+
             if (lesson == null)
             {
                 return NotFound();
             }
 
-            return View(lesson);
+            return PartialView("_LessonsPartial", lesson);
         }
 
-        // GET: Lessons/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Lessons/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // 回答するがクリックされたとき: Lessons/Index
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("LessonId,Categry,Title,Description,Question,Hint,Answer,Reference")] Lesson lesson)
+        public async Task<IActionResult> Answer(string answer, int lessonId)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(lesson);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(lesson);
-        }
+            // idをもとにLessonを取得
+            var lesson = await _context.Lesson
+                .FirstOrDefaultAsync(m => m.LessonId == lessonId);
 
-        // GET: Lessons/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var lesson = await _context.Lesson.FindAsync(id);
             if (lesson == null)
             {
                 return NotFound();
             }
-            return View(lesson);
+
+            // 入力文字を大文字に変換
+            if (answer == null || answer == "")
+            {
+                return RedirectToAction("Index", new { id = lessonId });
+            }
+            string conversionAnswer = answer.ToUpper();
+
+            if (conversionAnswer == lesson.Answer.ToUpper())
+            {
+                return RedirectToAction("AnswerPage", new { id = lessonId });
+            }
+            else
+            {
+                return RedirectToAction("Index", new { id = lessonId });
+
+            }
         }
 
-        // POST: Lessons/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // あきらめるがクリックされたとき: Lessons/Index
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("LessonId,Categry,Title,Description,Question,Hint,Answer,Reference")] Lesson lesson)
+        public async Task<IActionResult> GiveUp(int lessonId)
         {
-            if (id != lesson.LessonId)
+            // idをもとにLessonを取得
+            var lesson = await _context.Lesson
+                .FirstOrDefaultAsync(m => m.LessonId == lessonId);
+
+            if (lesson == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(lesson);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!LessonExists(lesson.LessonId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(lesson);
+            return RedirectToAction("AnswerPage", new { id = lessonId });
         }
 
-        // GET: Lessons/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GETメソッド： Lessons/AnswerPage
+        [HttpGet]
+        public async Task<IActionResult> AnswerPage(int? id)
         {
-            if (id == null)
+            if (id == null )
             {
                 return NotFound();
             }
 
+            // idをもとにLessonを取得
+            var selectedLesson = await _context.Lesson.FirstOrDefaultAsync(m => m.LessonId == id);
+
+            // 全Lessonを取得
+            var allLessons = await _context.Lesson.ToListAsync();
+
+            if (selectedLesson == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new LessonViewModel
+            {
+                SelectedLesson = selectedLesson,
+                AllLessons = allLessons
+            };
+
+            return View(viewModel);
+
+        }
+
+        // 回答ページの部分ビュー作成メソッド
+        public async Task<IActionResult> GetAnswer(int id)
+        {
+            // JSから渡されたidをもとに、選択されたLessonを取得
             var lesson = await _context.Lesson
                 .FirstOrDefaultAsync(m => m.LessonId == id);
+
             if (lesson == null)
             {
                 return NotFound();
             }
 
-            return View(lesson);
+            return PartialView("_AnswerPartial", lesson);
         }
 
-        // POST: Lessons/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var lesson = await _context.Lesson.FindAsync(id);
-            if (lesson != null)
-            {
-                _context.Lesson.Remove(lesson);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool LessonExists(int id)
-        {
-            return _context.Lesson.Any(e => e.LessonId == id);
-        }
     }
 }
+
+      
+
+        

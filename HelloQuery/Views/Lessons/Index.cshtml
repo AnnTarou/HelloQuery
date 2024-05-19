@@ -2,71 +2,48 @@
 
 @{
     Layout = "_LoggedInLayout";
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lesson";
 }
 
-<h1>Index</h1>
+<!--問題一覧のトグルバー-->
+<div id="toggle-bar" style="position: fixed; top: 0; right: 0; z-index: 100;">
+    <button id="toggle-button">問題一覧▼</button>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Categry)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Question)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hint)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Answer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reference)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Categry)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Question)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hint)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Answer)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reference)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.LessonId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.LessonId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.LessonId">Delete</a>
-            </td>
-        </tr>
+    <ul id="lesson-title" style="list-style-type: none;">
+        @foreach (var item in Model)
+        {
+            <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
+        }
+    </ul>
+
+</div>
+
+<!--部分ビュー-->
+
+<div id="partialview-section">
+    @await Html.PartialAsync("_LessonsPartial", (Lesson)ViewBag.SelectedLesson)
+</div>
+
+
+<!--回答入力欄-->
+
+<!-- 回答するボタンのフォーム -->
+<form method="post" asp-controller="Lessons" asp-action="Answer">
+    <input type="text" name="answer" placeholder="回答を入力してください">
+    <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
+    <input type="submit" value="回答する">
+</form>
+
+<!-- あきらめるボタンのフォーム -->
+<form method="post" asp-controller="Lessons" asp-action="GiveUp">
+    <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
+    <input type="submit" value="あきらめる">
+</form>
+
+ 
+
+<!--JSファイルの呼び出し-->
+@section Scripts {
+    <script src="~/js/design.js"></script>
+    <script src="~/js/lessonpartialview.js"></script>
 }
-    </tbody>
-</table>
