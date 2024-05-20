@@ -1,0 +1,38 @@
+﻿@model LessonViewModel
+@{
+    Layout = "_LoggedInLayout";
+    ViewData["Title"] = "Answer";
+}
+
+<!--問題一覧のトグルバー-->
+<div id="toggle-bar" style="position: fixed; top: 0; right: 0; z-index: 100;">
+    <button id="toggle-button">問題一覧▼</button>
+    <ul id="lesson-title" style="list-style-type: none;">
+        @foreach (var item in Model.AllLessons)
+        {
+            <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
+        }
+    </ul>
+</div>
+
+<!--回答＆解説の部分ビュー-->
+<div id="partial-answerview-container">
+    @await Html.PartialAsync("_AnswerPartial")
+</div>
+
+<!--各種ボタン-->
+
+<form method="post" asp-controller="Lessons" asp-action="Save">
+    <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
+    <input type="submit" value="保存する" />
+</form>
+
+<a href="@Url.Action("Index", "Controller", new { id = Model.SelectedLesson.LessonId - 1 })">前の問題</a>
+<a href="@Url.Action("Index", "Controller", new { id = Model.SelectedLesson.LessonId + 1 })">次の問題</a>
+
+<!--JSファイルの呼び出し-->
+@section Scripts {
+    <script src="~/js/design.js"></script>
+    <script src="~/js/answerpartialview.js"></script>
+}
+
