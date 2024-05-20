@@ -11,7 +11,7 @@ namespace HelloQuery.Data
                 serviceProvider.GetRequiredService<
                     DbContextOptions<HelloQueryContext>>()))
             {
-                //データベースにレコードがある場合、シード初期化子が返されレコードが追加されません。
+                // データベースにレコードがある場合、シード初期化子が返されレコードが追加されません。
                 if (context.Lesson.Any())
                 {
                     return;   // DB has been seeded
@@ -46,8 +46,6 @@ namespace HelloQuery.Data
                 };
                 context.User.AddRange(users);
                 context.SaveChanges();
-
-
             }
         }
     }

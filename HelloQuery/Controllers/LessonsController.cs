@@ -25,14 +25,12 @@ namespace HelloQuery.Controllers
             {
                 var selectedLesson = lessons.FirstOrDefault(m => m.LessonId == 1);
                 ViewBag.SelectedLesson = selectedLesson;
-
             }
             // idがnullでない場合、選択されたLessonを取得
             else
             {
                 var selectedLesson = lessons.FirstOrDefault(m => m.LessonId == id);
                 ViewBag.SelectedLesson = selectedLesson;
-
             }
             
             return View(lessons);
@@ -80,7 +78,6 @@ namespace HelloQuery.Controllers
             else
             {
                 return RedirectToAction("Index", new { id = lessonId });
-
             }
         }
 
@@ -127,7 +124,6 @@ namespace HelloQuery.Controllers
             };
 
             return View(viewModel);
-
         }
 
         // 回答ページの部分ビュー作成メソッド
@@ -144,10 +140,8 @@ namespace HelloQuery.Controllers
 
             return PartialView("_AnswerPartial", lesson);
         }
-
     }
 }
-
       
 
         

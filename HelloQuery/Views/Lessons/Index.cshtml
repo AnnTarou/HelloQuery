@@ -8,14 +8,12 @@
 <!--問題一覧のトグルバー-->
 <div id="toggle-bar" style="position: fixed; top: 0; right: 0; z-index: 100;">
     <button id="toggle-button">問題一覧▼</button>
-
     <ul id="lesson-title" style="list-style-type: none;">
         @foreach (var item in Model)
         {
             <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
         }
     </ul>
-
 </div>
 
 <!--部分ビュー-->
@@ -38,9 +36,7 @@
 <form method="post" asp-controller="Lessons" asp-action="GiveUp">
     <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
     <input type="submit" value="あきらめる">
-</form>
-
- 
+</form> 
 
 <!--JSファイルの呼び出し-->
 @section Scripts {
