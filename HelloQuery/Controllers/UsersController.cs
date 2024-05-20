@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HelloQuery.Data;
+﻿using HelloQuery.Data;
+using HelloQuery.Filter;
 using HelloQuery.Models;
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloQuery.Controllers
 {
@@ -19,13 +17,8 @@ namespace HelloQuery.Controllers
             _context = context;
         }
 
-        // GET: Users
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.User.ToListAsync());
-        }
-
-        // GET: Users/Details/5
+        // Users/DetailsにGETアクセスがあったとき
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,29 +36,54 @@ namespace HelloQuery.Controllers
             return View(user);
         }
 
-        // GET: Users/Create
+        // Users/CreateにGETアクセスがあったとき
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Users/CreateのPOSTメソッド
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,UserName,Email,Password")] User user)
+        public async Task<IActionResult> Create(User user)
         {
-            if (ModelState.IsValid)
+            // すでにDBに同一のメールアドレスが存在するとき、エラー
+            if (await _context.User.FindAsync(user.Email) != null)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("", "このメールアドレスはすでに存在しています。別のメールアドレスを入力してください。");
+                return View(user);
             }
-            return View(user);
+
+            // ModelState.IsValidがfalseのときにあえて設定している
+            if (!ModelState.IsValid)
+            {
+                // パスワードハッシュ化クラスのインスタンス生成
+                var hasher = new PasswordHasher<IdentityUser>();
+
+                // ハッシュ化されたパスワードの生成
+                var hashedPassword = hasher.HashPassword(null, user.Password);
+
+                // ハッシュ化されたパスワードをパスワードに設定
+                user.Password = hashedPassword;
+
+                // コンテキストに入力されたuserを登録
+                _context.Add(user);
+
+                // データベースの更新
+                await _context.SaveChangesAsync();
+
+                // DB更新成功したらログインページへリダイレクト
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                return View(user);
+            }
         }
 
-        // GET: Users/Edit/5
+        // Users/EditにGETアクセスがあったとき
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,23 +99,39 @@ namespace HelloQuery.Controllers
             return View(user);
         }
 
-        // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Users/EditのPOSTメソッド
         [HttpPost]
+        [SessionCheckFilter]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserName,Email,Password")] User user)
+        public async Task<IActionResult> Edit(int id, User user)
         {
-            if (id != user.UserId)
+            // セッションからユーザーIDを取得
+            var loginUser = (User)HttpContext.Items["User"];
+            var loginUserId = loginUser.UserId;
+
+            if (loginUserId != user.UserId)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            // ModelState.IsValidがfalseのときにあえて設定している
+            if (!ModelState.IsValid)
             {
                 try
                 {
+                    // パスワードハッシュ化クラスのインスタンス生成
+                    var hasher = new PasswordHasher<IdentityUser>();
+
+                    // ハッシュ化されたパスワードの生成
+                    var hashedPassword = hasher.HashPassword(null, user.Password);
+
+                    // ハッシュ化されたパスワードをパスワードに設定
+                    user.Password = hashedPassword;
+
+                    // コンテキストに変更を登録
                     _context.Update(user);
+
+                    // データベースの更新
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -111,8 +145,11 @@ namespace HelloQuery.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                // DB更新成功したらアカウント詳細ページにリダイレクト
+                return RedirectToAction("Details", "Users");
             }
+
             return View(user);
         }
 

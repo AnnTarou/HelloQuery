@@ -4,42 +4,77 @@
     Layout = "_LoggedInLayout";
     ViewData["Title"] = "Lesson";
 }
+<body>
+    <div class="col-3">
 
-<!--問題一覧のトグルバー-->
-<div id="toggle-bar" style="position: fixed; top: 0; right: 0; z-index: 100;">
-    <button id="toggle-button">問題一覧▼</button>
-    <ul id="lesson-title" style="list-style-type: none;">
-        @foreach (var item in Model)
-        {
-            <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
-        }
-    </ul>
-</div>
-
-<!--部分ビュー-->
-
-<div id="partialview-section">
-    @await Html.PartialAsync("_LessonsPartial", (Lesson)ViewBag.SelectedLesson)
-</div>
+        <!--部分ビュー-->
+        <div class="main">
+            <div id="partialview-section">
+                @await Html.PartialAsync("_LessonsPartial", (Lesson)ViewBag.SelectedLesson)
+            </div>
 
 
-<!--回答入力欄-->
+            <!--回答入力欄-->
 
-<!-- 回答するボタンのフォーム -->
-<form method="post" asp-controller="Lessons" asp-action="Answer">
-    <input type="text" name="answer" placeholder="回答を入力してください">
-    <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
-    <input type="submit" value="回答する">
-</form>
 
-<!-- あきらめるボタンのフォーム -->
-<form method="post" asp-controller="Lessons" asp-action="GiveUp">
-    <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
-    <input type="submit" value="あきらめる">
-</form> 
+            <table>
+                <tr>
+
+                    <!-- 回答するボタンのフォーム -->
+                    <form method="post" asp-controller="Lessons" asp-action="Answer">
+                        <input type="text" name="answer" placeholder="回答を入力してください">
+                        <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
+                    <td>
+                        <input type="submit" value="回答する">
+                        </form>
+                    </td>
+                    <td>
+                        <!-- あきらめるボタンのフォーム -->
+                        <form method="post" asp-controller="Lessons" asp-action="GiveUp">
+                            <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
+                            <input type="submit" value="あきらめる">
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--問題一覧-->
+    <div class="side">
+        <div class="col-9">
+            <h4>問題一覧</h4>
+            <ul id="lesson-title" style="list-style-type: none;">
+                @foreach (var item in Model)
+                {
+                    <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
+                }
+            </ul>
+        </div>
+    </div>
+</body>
 
 <!--JSファイルの呼び出し-->
 @section Scripts {
     <script src="~/js/design.js"></script>
     <script src="~/js/lessonpartialview.js"></script>
 }
+
+<style>
+    body {
+        background-color: #1f1a4d;
+        color: white;
+        font-family: 'Times New Roman';
+    }
+
+    .side {
+        position: fixed;
+        top: 57px;
+        right: -100px;
+        background-color: #8997b8;
+        margin-right: 120px;
+    }
+
+    .main {
+        text-align: center;
+    }
+</style>
