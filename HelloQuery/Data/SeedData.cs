@@ -34,7 +34,7 @@ namespace HelloQuery.Data
                 }
                 // ※※※ここまで※※※
                 // Lessonテーブルのシード追加
-                else if (!context.Lesson.Any())
+                if (!context.Lesson.Any())
                 {
                     var lessons = new Lesson[]
                     {
@@ -72,10 +72,6 @@ namespace HelloQuery.Data
                     };
                     context.Lesson.AddRange(lessons);
                     context.SaveChanges();
-                }
-                else
-                {
-                    return;
                 }
             }
         }
