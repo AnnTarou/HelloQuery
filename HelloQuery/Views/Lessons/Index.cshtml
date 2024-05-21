@@ -15,19 +15,22 @@
 
 
             <!--回答入力欄-->
-
-
+            <!-- 回答するボタンのフォーム -->
             <table>
                 <tr>
-
-                    <!-- 回答するボタンのフォーム -->
-                    <form method="post" asp-controller="Lessons" asp-action="Answer">
-                        <input type="text" name="answer" placeholder="回答を入力してください">
-                        <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
-                    <td>
-                        <input type="submit" value="回答する">
+                    <td colspan="2">
+                        <form method="post" asp-controller="Lessons" asp-action="Answer">
+                            <input type="text" name="answer" placeholder="回答を入力してください">
+                            <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
                         </form>
                     </td>
+                </tr>
+                <tr>
+                    <td>
+                         <form method="post" asp-controller="Lessons" asp-action="Answer">
+                            <input type="submit" value="回答する">
+                         </form>
+                   </td>
                     <td>
                         <!-- あきらめるボタンのフォーム -->
                         <form method="post" asp-controller="Lessons" asp-action="GiveUp">
