@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HelloQuery.Data;
+﻿using HelloQuery.Data;
 using HelloQuery.Models;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloQuery.Controllers
 {
@@ -32,7 +33,7 @@ namespace HelloQuery.Controllers
                 var selectedLesson = lessons.FirstOrDefault(m => m.LessonId == id);
                 ViewBag.SelectedLesson = selectedLesson;
             }
-            
+
             return View(lessons);
         }
 
@@ -101,7 +102,7 @@ namespace HelloQuery.Controllers
         [HttpGet]
         public async Task<IActionResult> AnswerPage(int? id)
         {
-            if (id == null )
+            if (id == null)
             {
                 return NotFound();
             }
@@ -142,6 +143,5 @@ namespace HelloQuery.Controllers
         }
     }
 }
-      
 
-        
+
