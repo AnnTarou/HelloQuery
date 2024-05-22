@@ -1,16 +1,63 @@
 ﻿@model HelloQuery.Models.Lesson
+<body>
+    <div>
+        <!--タイトル-->
+        <div class="Title-block">
+            <h1>@Model.Title</h1>
+        </div>
+        
+        <!--説明-->
+        <div class="description-block1">
+            <p>@Model.Description</p>
+        </div>
+    
+        <!--問題文-->
+        <div class="description-block2">
+            <p>@Model.Question</p>
+        </div>
 
-<div>
-    <h2>@Model.Title</h2>
-
-    <div class="description-block">
-        <p>@Model.Description</p>
+        <!--ヒント-->
+        <div class="Hint-block">
+            <p>@Model.Hint</p>
+        </div>
     </div>
+</body>
 
-    <div class="description-block">
-        <p>@Model.Question</p>
-    </div>
+<style>
+    /*タイトルの大きさ*/
+    h1{
+        font-size:50px;
+    }
+    /*文字の大きさ*/
+    p{
+        font-size: 20px;
+    }
 
-    <p>@Model.Hint</p>
-</div>
+    .Title-block {
+        line-height: 12.0;
+        position:fixed;
+        top:70px;
+		left: 420px;
+	}
 
+    .description-block1 {
+        line-height: 7.0;
+        position: fixed;
+        top: 110px;
+        left: 420px;
+    }
+
+    .description-block2 {
+        line-height: 7.0;
+        position: fixed;
+        top: 160px;
+        left: 420px;
+    }
+
+    .Hint-block {
+        line-height: 9.0;
+        position: fixed;
+        top: 200px;
+        left: 420px;
+    }
+</style>
