@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/HelloQuery.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header id="header">
+    <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="">HelloQuery</a>
@@ -21,12 +21,13 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item1">
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Create">新規作成</a>
                         </li>
-                        <li class="nav-item2">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Details">ログイン</a>
-                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">ログイン</a>
+						</li>
+
                     </ul>
                 </div>
             </div>
@@ -54,10 +55,15 @@
 <style>
     body {
         background-color: #1f1a4d;
+        color: white;
     }
 
-    .container {
-        color: white;
+    a{
+        color:white;
+    }
+
+    .nav-item {
+		padding: 0 0 0 10px;
     }
 
     /*リンクの下線を消す*/
@@ -65,16 +71,17 @@
         text-decoration: none;
     }
 
-    .nav-item1 {
-        position:fixed;
-        top:10px;
-        right:80px;
+    .btn-gradient-flat {
+        display: inline-block;
+        padding: 0.5em 1em;
+        text-decoration: none;
+        color: #FFF;
+        background-image: linear-gradient(#202020 0%, #202020 100%);
+        transition: .4s;
     }
 
-    .nav-item2 {
-        position: fixed;
-        top: 10px;
-        right: 20px;
+    .btn-gradient-flat:hover {
+        background-image: linear-gradient(#202020 0%, #f5f5f5 90%);       
     }
 
     footer{
