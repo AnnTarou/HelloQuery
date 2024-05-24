@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="">HelloQuery</a>
+				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action=""><b>HelloQuery</b></a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -22,10 +22,10 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Create">新規作成</a>
+							<a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Create"><b>新規作成</b></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">ログイン</a>
+							<a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login"><b>ログイン</b></a>
 						</li>
 
                     </ul>
@@ -52,38 +52,58 @@
 </body>
 </html>
 
+<div class="bg"></div>
+<div class="bg bg2"></div>
+<div class="bg bg3"></div>
+
 <style>
     body {
         background-color: #1f1a4d;
         color: white;
+        font-family: 'Times New Roman',serif;
     }
 
-    a{
-        color:white;
+    .form-group{
+        font-size:20px;
+    }
+
+    /*ヘッダー*/
+    .navbar-brand{
+        font-size:24px;
     }
 
     .nav-item {
-		padding: 0 0 0 10px;
+		padding: 5px 0 0 20px;
+        font-size:20px;
     }
 
     /*リンクの下線を消す*/
     a {
+        color:white;
         text-decoration: none;
     }
 
-    .btn-gradient-flat {
-        display: inline-block;
-        padding: 0.5em 1em;
-        text-decoration: none;
-        color: #FFF;
-        background-image: linear-gradient(#202020 0%, #202020 100%);
-        transition: .4s;
+    /*ボタンのデザイン*/
+    .btn {
+
+        width: 13rem;
+        height: 2.5rem;
+        font-size: 18px;
+        color: white;
+        background-color: #AA0000;
     }
 
-    .btn-gradient-flat:hover {
-        background-image: linear-gradient(#202020 0%, #f5f5f5 90%);       
+    .btn:hover {
+        color: #AA0000;
+        background: white;
     }
 
+    input[type="password"], [type="Email"], [type="UserName"] {
+        width: 370px;
+        height: 30px;
+    }
+
+    /*フッター*/
     footer{
         background-color:black;
         width:100%;
@@ -91,4 +111,48 @@
         position:absolute;
         bottom:0;
     }
+
+/*背景*/
+.bg {
+  animation:slide 3s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, #555555 50%, #1f1a4d 50%);
+  bottom:0;
+  left:-50%;
+  opacity:.5;
+  position:fixed;
+  right:-50%;
+  top:0;
+  z-index:-1;
+}
+
+.bg2 {
+  animation-direction:alternate-reverse;
+  animation-duration:4s;
+}
+
+.bg3 {
+  animation-duration:5s;
+}
+
+.content {
+  background-color:rgba(255,255,255,.8);
+  border-radius:.25em;
+  box-shadow:0 0 .25em rgba(0,0,0,.25);
+  box-sizing:border-box;
+  left:50%;
+  padding:10vmin;
+  position:fixed;
+  text-align:center;
+  top:50%;
+  transform:translate(-50%, -50%);
+}
+
+@@keyframes slide {
+  0% {
+    transform:translateX(-25%);
+  }
+  100% {
+    transform:translateX(25%);
+  }
+}
 </style>
