@@ -7,14 +7,13 @@
 <h1 class="text-center">新規会員登録</h1>
 
 <hr />
-<div class="text-center">
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+<form asp-action="Create">
+		<div class="text-center">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
+                <label asp-for="UserName" class="control-label">名前</label>
+			    <p><input asp-for="UserName" class=" text-center" /></p>
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
 
@@ -22,7 +21,7 @@
 
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+			    <p><input asp-for="Email" class="text-center" /></p>
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
@@ -30,24 +29,21 @@
 
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
+			    <p><input asp-for="Password" class="text-center" /></p>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <br />
-            
-            <div class="form-group">
-				<button class="btn-gradient-flat"><a href="">作成</a></button>
-            </div>
-        </form>
-    </div>
-</div>
-</div>
+
+        <div class="text-center">
+            <a href="https://localhost:7208/Lessons" class="btn btn--cubic">作成</a>
+        </div>
+</form>
 
 <br />
 
-<div>
-    <a href="https://localhost:7208/">ホームに戻る</a>
+<div class="text-center">
+    <a href="https://localhost:7208" class="btn btn--cubic">ホームに戻る</a>
 </div>
 
 @section Scripts {
@@ -55,20 +51,14 @@
 }
 
 <style>
-
-    h1{
-        font-family: "祥南行書";
+    /*入力欄*/
+    input{
+        width: 370px;
+        height: 30px;
     }
 
-    .form-group{
-        display:block;
-        text-align:center;
+    .btn {
+        width: 13rem;
+        height: 2.7rem;
     }
-
-    /*リンクの下線を消す*/
-    a {
-        color:white;
-        text-decoration: none;
-    }
-
 </style>
