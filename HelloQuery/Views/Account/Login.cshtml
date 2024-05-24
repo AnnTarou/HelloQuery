@@ -3,17 +3,18 @@
     ViewData["Title"] = "ログイン";
 }
 
-<h2>ログイン</h2>
+<h2 class ="text-center">ログイン</h2>
 
 <hr />
 <form method="post">
+<div class="text-center">
     <!--ログインできない場合のエラーメッセージ表示-->
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <!--メールアドレス入力フォーム-->
     <div class="form-group">
         <label asp-for="Email">メールアドレス</label>
-        <input type="email" class="form-control" name="Email" required />
+		<p><input type="email" class="text-center" name="Email" required /></p>
     </div>
 
     <br />
@@ -21,47 +22,52 @@
     <!--パスワード入力フォーム-->
     <div class="form-group">
         <label asp-for="Password">パスワード</label>
-        <input type="password" class="form-control" name="Password" required />
+        <p><input type="password" class="text-center" name="Password" required /></p>
     </div>
 
     <!--ログイン状態を保持するボタン-->
     <div class="form-group form-check">
-        <input type="checkbox" class="form-check-input" name="RememberMe" value="true" />
+        <input type="checkbox" class="text-center" name="RememberMe" value="true" />
         <label class="form-check-label" for="RememberMe">ログイン状態を保持する</label>
     </div>
 
     <br />
+    <br />
 
-    <button class="btn-gradient-flat" href="">ログイン</button>
+    <a href="https://localhost:7208/Lessons/Index" class="btn btn--cubic">ログイン</a>
+</div>
 </form>
 
 <br />
 
 <div class="text-center">
-    <a href="https://localhost:7208/">ホームに戻る</a>
+    <a href="https://localhost:7208" class="btn btn--cubic">ホームに戻る</a>
 </div>
 
-@*<!-- 新規会員登録ボタン -->
-<a href="@Url.Action("Create", "People")" class="btn btn-secondary">新規会員登録</a>*@
+<br />
 
 <!-- パスワードを忘れた方はこちらボタン -->
-<div class="text-right">
-    <a href="@Url.Action("ForgotPassword", "Account")" class="btn btn-link">パスワードを忘れた方はこちら</a>
+<div class="text">
+    <a href="@Url.Action("ForgotPassword", "Account")">パスワードを忘れた方はこちら</a>
 </div>
 
 
 <style>
-    /*リンクの下線を消す*/
-    .btn {
-        color:white;
-        text-decoration: none;
-        bottom:30px;
-        background-color:black;
-    }
-    a{
-		color: white;
-		text-decoration: none;
-        bottom: 30px;
+
+    .btn{
+        width: 13rem;
+        height: 2.5rem;
     }
 
+    /*パスワードを忘れた方…*/
+    .text{
+        color:white;
+        position:absolute;
+        bottom:70px;
+        text-decoration: none;
+    }
+
+    .form-check-label{
+        font-size:17px;
+    }
 </style>
