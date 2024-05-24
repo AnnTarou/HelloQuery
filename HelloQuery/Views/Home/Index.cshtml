@@ -11,42 +11,41 @@
 <br />
 
 <div class="text-center">
-    <h4>sql学習サイト</h4>
+    <h3>sql学習サイト</h3>
 </div>
 
 <br />
 
-<table>
-    <tr>
-        <td><button>新規作成</button></td>
-        <td><button>ログイン</button></td>
-    </tr>
-</table>
-
-<div class="btn-border-gradient-wrap btn-border-gradient-wrap--silver">
-    <a href="" class="btn btn-border-gradient"><span class="btn-text-gradient--silver">新規作成</span></a>
+<div class="text-center">
+    <button class="btn-gradient-flat" ><a href="https://localhost:7208/Users/Create">新規作成</a></button>
+    <button class="btn-gradient-flat"><a href="https://localhost:7208/Account/Login">ログイン</a></button>
 </div>
 
+<!--背景装飾-->
+
 <style>
-    html {
-        background-color: #1f1a4d;
-    }
-
-    h1 {
+    .display-1,h3{
         color: white;
         font-family: 'Times New Roman';
     }
 
-    h4 {
-        color: white;
-        font-family: 'Times New Roman';
-        font-size: 4;
+    .btn-gradient-flat{
+		display: flex;
+		flex-direction: row;
     }
 
-    table {
-        height: 250px;
-        display: bottom;
-        margin: auto;
+
+    .btn-gradient-flat {
+        display: inline-block;
+        padding: 0.8em 1em;
+        text-decoration: none;
+        color: #FFF;
+        background-image: linear-gradient(#222 0%, #f5f5f5 100%);
+        transition: .4s;
+    }
+
+    .btn-gradient-flat:hover {
+        background-image: linear-gradient(#222 0%, #f5f5f5 70%);
     }
 
 </style>

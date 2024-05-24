@@ -5,11 +5,16 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="text-center">
+    <h1>苦手問題一覧</h1>
 
-<p>
+    <h4>苦手な問題はありません！この調子で頑張りましょう</h4>
+</div>
+
+
+@*<p>
     <a asp-action="Create">Create New</a>
-</p>
+</p>*@
 <table class="table">
     <thead>
         <tr>
@@ -40,3 +45,10 @@
 }
     </tbody>
 </table>
+
+<style>
+    h4{
+        opacity: 0.4;
+    }
+
+</style>
