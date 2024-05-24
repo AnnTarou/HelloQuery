@@ -6,13 +6,14 @@
 }
 <body>
     <div class="col-3">
+        <div class="kaitou">
 
-        <!--部分ビュー-->
-        <div class="main">
+            <!--部分ビュー-->
             <div id="partialview-section">
-                @await Html.PartialAsync("_LessonsPartial", (Lesson)ViewBag.SelectedLesson)
+                <p>@await Html.PartialAsync("_LessonsPartial", (Lesson)ViewBag.SelectedLesson)</p>
             </div>
 
+            <br />
 
             <!--回答入力欄-->
             <!-- 回答するボタンのフォーム -->
@@ -28,10 +29,10 @@
 
                 <tr>
                     <td>
-                         <form method="post" asp-controller="Lessons" asp-action="Answer">
-                            <input type="submit" value="回答する">
-                         </form>
-                   </td>
+                        <form method="post" asp-controller="Lessons" asp-action="Answer">
+                        <input type="submit" value="回答する">
+                        </form>
+                    </td>
                     <td>
                         <!-- あきらめるボタンのフォーム -->
                         <form method="post" asp-controller="Lessons" asp-action="GiveUp">
@@ -42,17 +43,18 @@
                 </tr>
             </table>
         </div>
-    </div>
-    <!--問題一覧-->
-    <div class="side">
-        <div class="col-9">
-            <h4>問題一覧</h4>
-            <ul id="lesson-title" style="list-style-type: none;">
-                @foreach (var item in Model)
-                {
-                    <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
-                }
-            </ul>
+    
+        <!--問題一覧-->
+        <div class="side">
+            <div class="col-9">
+                <h4>問題一覧</h4>
+                <ul id="lesson-title" style="list-style-type: none;">
+                    @foreach (var item in Model)
+                    {
+                        <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
+                    }
+                </ul>
+            </div>
         </div>
     </div>
 </body>
@@ -64,21 +66,23 @@
 }
 
 <style>
-    body {
-        background-color: #1f1a4d;
-        color: white;
-        font-family: 'Times New Roman';
-    }
-
+    /*サイドバー(問題一覧)*/
     .side {
-        position: fixed;
-        top: 57px;
-        right: -100px;
-        background-color: #8997b8;
-        margin-right: 120px;
+        font-size:18px;
+        line-height:2.5;
+        position: absolute;
+		background-color: #8997b8;
+		top: 57px;
+        right: -1px;
+        width:17%;
+        height:100%;
+        aspect-ratio: 5 / 3;
     }
 
-    .main {
-        text-align: center;
+
+    .kaitou{
+        position: absolute;
+        top: 450px;
+        left: 400px;
     }
 </style>
