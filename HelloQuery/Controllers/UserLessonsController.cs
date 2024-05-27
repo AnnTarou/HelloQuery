@@ -1,12 +1,15 @@
 ﻿using HelloQuery.Data;
 using HelloQuery.Models;
-
+using HelloQuery.Filter;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.CodeAnalysis.FlowAnalysis;
 
 namespace HelloQuery.Controllers
 {
+    // ログインしているかチェックするフィルター追加
+    [SessionCheckFilter]
     public class UserLessonsController : Controller
     {
         private readonly HelloQueryContext _context;
@@ -16,7 +19,7 @@ namespace HelloQuery.Controllers
             _context = context;
         }
 
-        // GET: UserLessons
+        // UserLessons/Index:GETアクセスあったとき
         public async Task<IActionResult> Index()
         {
             var helloQueryContext = _context.UserLesson.Include(u => u.Lesson).Include(u => u.User);
@@ -51,100 +54,44 @@ namespace HelloQuery.Controllers
             return View();
         }
 
-        // POST: UserLessons/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // 「苦手リストに追加」が押されたとき　/　UserLessons/Create：POSTメソッド
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserLessonId,LessonId,UserId")] UserLesson userLesson)
+        public async Task<IActionResult> Create(int? lessonId)
         {
-            if (ModelState.IsValid)
+            // LessonIdがnullの場合はNotFoundを返す
+            if (lessonId == null)
             {
-                _context.Add(userLesson);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            ViewData["LessonId"] = new SelectList(_context.Lesson, "LessonId", "LessonId", userLesson.LessonId);
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Email", userLesson.UserId);
-            return View(userLesson);
+
+            // 現在ログインしているユーザーを取得
+            User loginUser = (User)HttpContext.Items["User"];
+
+            if (loginUser == null)
+            {
+                return NotFound();
+            }
+
+            // UserLessonのインスタンスを生成
+            UserLesson userLesson = new UserLesson()
+            {
+                UserId = loginUser.UserId,
+                LessonId = (int)lessonId,
+                User = loginUser,
+                Lesson = await _context.Lesson.FindAsync(lessonId)
+            };
+
+            // UserLessonをコンテキストに追加
+            _context.Add(userLesson);
+
+            await _context.SaveChangesAsync();
+
+            // UserLessonのIndexにリダイレクト
+            return RedirectToAction("Index");
         }
 
-        // GET: UserLessons/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userLesson = await _context.UserLesson.FindAsync(id);
-            if (userLesson == null)
-            {
-                return NotFound();
-            }
-            ViewData["LessonId"] = new SelectList(_context.Lesson, "LessonId", "LessonId", userLesson.LessonId);
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Email", userLesson.UserId);
-            return View(userLesson);
-        }
-
-        // POST: UserLessons/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserLessonId,LessonId,UserId")] UserLesson userLesson)
-        {
-            if (id != userLesson.UserLessonId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(userLesson);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserLessonExists(userLesson.UserLessonId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["LessonId"] = new SelectList(_context.Lesson, "LessonId", "LessonId", userLesson.LessonId);
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Email", userLesson.UserId);
-            return View(userLesson);
-        }
-
-        // GET: UserLessons/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userLesson = await _context.UserLesson
-                .Include(u => u.Lesson)
-                .Include(u => u.User)
-                .FirstOrDefaultAsync(m => m.UserLessonId == id);
-            if (userLesson == null)
-            {
-                return NotFound();
-            }
-
-            return View(userLesson);
-        }
-
-        // POST: UserLessons/Delete/5
+        // 苦手リストの「削除」ボタンがおされたとき　UserLessons/Delete：POSTメソッド
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
