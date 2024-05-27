@@ -38,13 +38,13 @@ namespace HelloQuery.Data
                 {
                     var lessons = new Lesson[]
                     {
-                        new Lesson{ Category = "基本の検索",
+                        new Lesson{ Category = "基本的な検索",
                                     Title =  "SELECT文とFROM句",
-                                    Description = "データを取得するための基本的な構文。",
-                                    Question = "タイトルと著者の一覧を取得してください",
-                                    Hint = "ヒントだよ～",
-                                    Answer = "SELECT title, author FROM books;",
-                                    Reference = "解説だよ～" },
+                                    Description = "このページでは、SQLにおける基本中の基本であるSELECT文とFROM句について学びます。\r\n\r\n### SELECT文とFROM句について\r\nSELECT文は、データベースから取得したい列（カラム）を指定するための命令です。\r\nFROM句は、データを取得するテーブルの名前を指定します。\r\nカラムが複数ある場合は、カンマ（`,`）を使用して列挙します。\r\n\r\n構文\r\n```sql\r\nSELECT カラム1, カラム2, ... FROM テーブル名;\r\n```\r\n上記の例では、`テーブル名`から`カラム1`、`カラム2`などの列を取得します。",
+                                    Question = "本のタイトルと著者の一覧を取得してください。",
+                                    Hint = "- タイトルと著者のカラムを取得するには `SELECT` を使用します。\r\n- データを取得するテーブルを指定するには `FROM` を使用します。",
+                                    Answer = "```SELECT title, author\r\nFROM books;\r\n```",
+                                    Reference = "- `SELECT title, author`: タイトルと著者を取得します。\r\n- `FROM books`: 書籍テーブルからデータを取得します。" },
 
                         new Lesson{ Category = "基本の検索",
                                     Title =  "WHERE句",
