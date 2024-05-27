@@ -9,6 +9,8 @@
 
 <div>
     <hr />
+    <div class="text-center">
+
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.UserName)
@@ -29,12 +31,15 @@
             @Html.DisplayFor(model => model.Password)
         </dd>
     </dl>
+    </div>
 </div>
-<div>
-	<a asp-action="Edit" asp-route-id="@Model?.UserId">編集</a>
-</div>
-<div>
-    <a asp-action="Index">戻る</a>
+<br />
+<br />
+
+<div class="text-center">
+    <p><a asp-action="Edit" asp-route-id="@Model?.UserId" class="btn btn--cubic">編集</a></p>
+
+	<p><a asp-action="Index" class="btn btn--cubic">戻る</a></p>
 </div>
 
 
@@ -42,5 +47,20 @@
     a{
         color: white;
         text-decoration: none;
+    }
+
+    .row{
+        line-height:3.0;
+    }
+
+    dt{
+        font-size:23px;
+    }
+
+    .btn {
+        width: 16rem;
+        height: 2.7rem;
+        color: white;
+        background-color: #AA0000;
     }
 </style>
