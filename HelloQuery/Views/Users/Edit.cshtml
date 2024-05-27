@@ -21,12 +21,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-					<p><input asp-for="Email" class="text-center" /></p>
+				<p><input asp-for="Email" class="text-center" /></p>
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-					<p><input asp-for="Password" class="text-center" /></p>
+				<p><input asp-for="Password" class="text-center" /></p>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
@@ -37,15 +37,16 @@
     </div>
 </div>
 
+
 <div class="text-center">
-	<input type="submit" value="完了" class="btn btn-primary" />
+	<input type="submit" value="上書き保存" class="btn btn-primary" />
 </div>
 
 
 <br />
 
 <div class="text-center">
-    <a asp-action="Index" class="btn btn-primary">戻る</a>
+    <a asp-action="Details" class="btn btn-primary">戻る</a>
 </div>
 
 @section Scripts {
@@ -55,7 +56,19 @@
 <style>
     input {
         width: 370px;
-        height: 30px;
+        height: 35px;
         font-size:23px;
+    }
+
+    .row,h1 {
+        line-height: 2.5;
+    }
+
+    label{
+        font-size:26px;
+    }
+
+    .btn {
+        font-size: 20px;
     }
 </style>
