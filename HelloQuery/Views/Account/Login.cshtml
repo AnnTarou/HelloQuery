@@ -3,45 +3,45 @@
     ViewData["Title"] = "ログイン";
 }
 
-<h2 class ="text-center">ログイン</h2>
+<h2 class="text-center">ログイン</h2>
 
 <hr />
 <form method="post">
-<div class="text-center">
-    <!--ログインできない場合のエラーメッセージ表示-->
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="text-center">
+        <!--ログインできない場合のエラーメッセージ表示-->
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <!--メールアドレス入力フォーム-->
-    <div class="form-group">
-        <label asp-for="Email">メールアドレス</label>
-		<p><input type="email" class="text-center" name="Email" required /></p>
+        <!--メールアドレス入力フォーム-->
+        <div class="form-group">
+            <label asp-for="Email">メールアドレス</label>
+            <p><input type="email" class="text-center" name="Email" required /></p>
+        </div>
+
+        <br />
+
+        <!--パスワード入力フォーム-->
+        <div class="form-group">
+            <label asp-for="Password">パスワード</label>
+            <p><input type="password" class="text-center" name="Password" required /></p>
+        </div>
+
+        <!--ログイン状態を保持するボタン-->
+        <div class="form-group form-check">
+            <input type="checkbox" class="text-center" name="RememberMe" value="true" />
+            <label class="form-check-label" for="RememberMe">ログイン状態を保持する</label>
+        </div>
+
+        <br />
+        <br />
+
+        <button type="submit" asp-action="Login" asp-controller="Account" class="btn btn--cubic">ログイン</button>
     </div>
-
-    <br />
-
-    <!--パスワード入力フォーム-->
-    <div class="form-group">
-        <label asp-for="Password">パスワード</label>
-        <p><input type="password" class="text-center" name="Password" required /></p>
-    </div>
-
-    <!--ログイン状態を保持するボタン-->
-    <div class="form-group form-check">
-        <input type="checkbox" class="text-center" name="RememberMe" value="true" />
-        <label class="form-check-label" for="RememberMe">ログイン状態を保持する</label>
-    </div>
-
-    <br />
-    <br />
-
-    <a href="https://localhost:7208/Lessons/Index" class="btn btn--cubic">ログイン</a>
-</div>
 </form>
 
 <br />
 
 <div class="text-center">
-    <a href="https://localhost:7208" class="btn btn--cubic">ホームに戻る</a>
+    <a href="@Url.Action("Index", "Home")" class="btn btn--cubic">ホームに戻る</a>
 </div>
 
 <br />
@@ -54,20 +54,20 @@
 
 <style>
 
-    .btn{
+    .btn {
         width: 13rem;
         height: 2.5rem;
     }
 
     /*パスワードを忘れた方…*/
-    .text{
-        color:white;
-        position:absolute;
-        bottom:70px;
+    .text {
+        color: white;
+        position: absolute;
+        bottom: 70px;
         text-decoration: none;
     }
 
-    .form-check-label{
-        font-size:17px;
+    .form-check-label {
+        font-size: 17px;
     }
 </style>

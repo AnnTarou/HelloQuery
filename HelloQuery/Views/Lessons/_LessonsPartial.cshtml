@@ -14,12 +14,12 @@
     
         <!--問題文-->
         <div class="description-block2">
-            <p>@Model.SelectedLesson.Question</p>
+            @Html.Raw(@Model.SelectedLesson.Question)
         </div>
 
         <!--ヒント-->
         <div class="Hint-block">
-            <p>@Model.SelectedLesson.Hint</p>
+            @Html.Raw(@Model.SelectedLesson.Hint)
         </div>
     </div>
 </body>

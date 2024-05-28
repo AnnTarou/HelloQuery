@@ -19,16 +19,16 @@
             </div>
 
             <div class="details">
-                @Html.DisplayNameFor(model => model.Password) :  @Html.DisplayFor(model => model.Password)
+                @Html.DisplayNameFor(model => model.Password) :  <span>セキュリティ保護のためパスワードは表示できません</span>
             </div>
         </dl>
-    </div>
+        </div>
     
     <br />
     <br />
 
-    <form asp-action="Delete" class="text-center">
-        <input type="hidden" asp-for="UserId" />
+    <form method="post" asp-controller="Users" asp-action="Delete">
+        <input type="hidden" name="id" value="@Model.UserId" />
 		<label class="open" for="popup"><p class="btn btn-danger">削除</p></label>
 		<input type="checkbox" id="popup">
 		    <div class="overlay">
@@ -42,16 +42,16 @@
 					<br />
 
 					<div class="moji">※削除したアカウントのデータは復元できません※</div>
+
 					<br />
 
-					<p><input type="submit" value="削除" class="Pbtn" /></p>
-
+                    <p><input type="submit" value="削除" class="Pbtn" /></p>
 				</h4>
 			</div>
 		</div>
-
-        <p><a asp-action="Details" class="btn btn--cubic">マイページに戻る</a></p>
     </form>
+
+        <p><a asp-action="Details" asp-controller="Users"  class="btn btn--cubic">マイページに戻る</a></p>
 </div>
 
 

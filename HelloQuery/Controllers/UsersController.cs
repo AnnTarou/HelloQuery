@@ -1,7 +1,6 @@
 ﻿using HelloQuery.Data;
 using HelloQuery.Filter;
 using HelloQuery.Models;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,25 +16,6 @@ namespace HelloQuery.Controllers
             _context = context;
         }
 
-        // Users/DetailsにGETアクセスがあったとき
-        [HttpGet]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.UserId == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
         // Users/CreateにGETアクセスがあったとき
         [HttpGet]
         public IActionResult Create()
@@ -48,10 +28,32 @@ namespace HelloQuery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(User user)
         {
+
+            // ニックネームが25文字以上のとき、エラー
+            if (user.UserName.Length > 25)
+            {
+                ModelState.AddModelError("", "ニックネームは25文字以内で入力してください。");
+                return View(user);
+            }
+
             // すでにDBに同一のメールアドレスが存在するとき、エラー
-            if (await _context.User.FindAsync(user.Email) != null)
+            if (await _context.User.AnyAsync(u => u.Email == user.Email))
             {
                 ModelState.AddModelError("", "このメールアドレスはすでに存在しています。別のメールアドレスを入力してください。");
+                return View(user);
+            }
+
+            // パスワードの文字数が6文字以上でないとき、エラー
+            if (user.Password.Length < 6)
+            {
+                ModelState.AddModelError("", "パスワードは6文字以上で入力してください。");
+                return View(user);
+            }
+
+            // パスワードと確認用パスワードが一致しないとき、エラー
+            if (user.Password != user.ConfirmPassword)
+            {
+                ModelState.AddModelError("", "パスワードが一致しません");
                 return View(user);
             }
 
@@ -83,19 +85,24 @@ namespace HelloQuery.Controllers
         }
 
         // Users/EditにGETアクセスがあったとき
+        [SessionCheckFilter]
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            // Useridがnullのとき、NotFoundを返す
             if (id == null)
             {
                 return NotFound();
             }
 
             var user = await _context.User.FindAsync(id);
+
+            // Userがnullのとき、NotFoundを返す
             if (user == null)
             {
                 return NotFound();
             }
+
             return View(user);
         }
 
@@ -103,15 +110,35 @@ namespace HelloQuery.Controllers
         [HttpPost]
         [SessionCheckFilter]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User user)
+        public async Task<IActionResult> Edit(User user)
         {
             // セッションからユーザーIDを取得
             var loginUser = (User)HttpContext.Items["User"];
-            var loginUserId = loginUser.UserId;
 
-            if (loginUserId != user.UserId)
+            if (loginUser.UserId != user.UserId)
             {
                 return NotFound();
+            }
+
+            // ニックネームが25文字以上のとき、エラー
+            if (user.UserName.Length > 25)
+            {
+                ModelState.AddModelError("", "ニックネームは25文字以内で入力してください。");
+                return View(user);
+            }
+
+            // パスワードの文字数が6文字以上でないとき、エラー
+            if (user.Password.Length < 6)
+            {
+                ModelState.AddModelError("", "パスワードは6文字以上で入力してください。");
+                return View(user);
+            }
+
+            // パスワードと確認用パスワードが一致しないとき、エラー
+            if (user.Password != user.ConfirmPassword)
+            {
+                ModelState.AddModelError("", "パスワードが一致しません");
+                return View(user);
             }
 
             // ModelState.IsValidがfalseのときにあえて設定している
@@ -153,16 +180,23 @@ namespace HelloQuery.Controllers
             return View(user);
         }
 
-        // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // Users/DeleteにGETアクセスがあったとき
+        [SessionCheckFilter]
+        public async Task<IActionResult> Delete()
         {
-            if (id == null)
+            // セッションからユーザーIDを取得
+            var loginUser = (User)HttpContext.Items["User"];
+
+            // idがnullのとき、NotFoundを返す
+            if (loginUser == null)
             {
                 return NotFound();
             }
 
             var user = await _context.User
-                .FirstOrDefaultAsync(m => m.UserId == id);
+                .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId);
+
+            // Userがnullのとき、NotFoundを返す
             if (user == null)
             {
                 return NotFound();
@@ -171,19 +205,54 @@ namespace HelloQuery.Controllers
             return View(user);
         }
 
-        // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // Users/Delete:POSTメソッド
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [SessionCheckFilter]
+        public async Task<IActionResult> Delete(int id)
         {
-            var user = await _context.User.FindAsync(id);
+            // Includeメソッドを使用してこのユーザーに関連するUserLessonを取得
+            var user = await _context.User
+                .Include(u => u.UserLesson)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            // Userがnullでないとき
             if (user != null)
             {
+                // このユーザーのUserLessonを削除
+                _context.UserLesson.RemoveRange(user.UserLesson);
+
+                // このユーザーをUserから削除
                 _context.User.Remove(user);
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Index","Home");
+        }
+
+        // Users/DetailsにGETアクセスがあったとき
+        [HttpGet]
+        [SessionCheckFilter]
+        public async Task<IActionResult> Details()
+        {
+            // セッションからユーザーIDを取得
+            var loginUser = (User)HttpContext.Items["User"];
+
+            if (loginUser == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.User
+                .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
         }
 
         private bool UserExists(int id)
