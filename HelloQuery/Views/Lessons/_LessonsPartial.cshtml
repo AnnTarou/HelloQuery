@@ -1,24 +1,25 @@
-﻿@model HelloQuery.Models.Lesson
+﻿@model HelloQuery.Models.LessonViewModel
+
 <body>
     <div>
         <!--タイトル-->
         <div class="Title-block">
-            <h1>@Model.Title</h1>
+            <h1>@Model.SelectedLesson.Title</h1>
         </div>
         
         <!--説明-->
         <div class="description-block1">
-            <p>@Model.Description</p>
+            @Html.Raw(Model.SelectedLesson.Description)
         </div>
     
         <!--問題文-->
         <div class="description-block2">
-            <p>@Model.Question</p>
+            <p>@Model.SelectedLesson.Question</p>
         </div>
 
         <!--ヒント-->
         <div class="Hint-block">
-            <p>@Model.Hint</p>
+            <p>@Model.SelectedLesson.Hint</p>
         </div>
     </div>
 </body>
@@ -26,40 +27,45 @@
 <style>
     /*タイトルの大きさ*/
     h1{
-        font-size:50px;
+        font-size:40px;
         text-align:center;
     }
     /*文字の大きさ*/
     p{
-        font-size: 20px;
+        font-size: 16px;
+        line-height: 1.0;
     }
 
     .Title-block {
         line-height: 12.0;
-        position:fixed;
-        top:70px;
-		left: 420px;
+        position: relative;
         align-items: center;
     }
 
     .description-block1 {
-        position: fixed;
-        top: 170px;
-        left: 420px;
+        position: relative;
         align-items: center;
+        letter-spacing: 0;
+        line-height: 1.0;
+        border: 2px solid #000000;
+    }
+
+    .box.description-block1 code {
+        font-family: 'Courier New', Courier, monospace;
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 2px 4px;
     }
 
     .description-block2 {
-        position: fixed;
-        top: 260px;
-        left: 420px;
+        position: relative;
         align-items: center;
+        line-height: 1.0;
     }
 
     .Hint-block {
-        line-height: 13.0;
-        position: fixed;
-        top: 260px;
-        left: 420px;
+        line-height: 1.0;
+        position: relative;
     }
 </style>

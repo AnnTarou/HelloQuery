@@ -6,6 +6,6 @@
         public Lesson SelectedLesson { get; set; }
 
         // 全Lessonを保持するリスト
-        public List<Lesson> AllLessons { get; set; }
+        public List<Lesson>? AllLessons { get; set; }
     }
 }

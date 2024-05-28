@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<HelloQuery.Models.UserLesson>
-
 @{
     Layout = "_LoggedInLayout";
     ViewData["Title"] = "Index";
@@ -7,48 +6,30 @@
 
 <div class="text-center">
     <h1>苦手問題一覧</h1>
-
-    <h4>苦手な問題はありません！この調子で頑張りましょう</h4>
 </div>
 
+<hr />
 
-@*<p>
-    <a asp-action="Create">Create New</a>
-</p>*@
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Lesson)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Lesson.LessonId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Email)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.UserLessonId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.UserLessonId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.UserLessonId">Delete</a>
-            </td>
-        </tr>
+<!--苦手リストがない場合-->
+@if (Model.Count() <= 0)
+{
+    <h4>苦手リストはありません。この調子で頑張りましょう！</h4>
 }
-    </tbody>
-</table>
+
+<!--苦手リストがある場合の苦手一覧リスト-->
+<ul list-style:none>
+@foreach (var item in Model) 
+{    
+    <li>
+        <a asp-action="Index" asp-controller="Lesson" asp-route-id="@item.LessonId">@item.Lesson.Title</a>
+        <a asp-action="Details" asp-route-id="@item.LessonId" class="btn btn-primary">詳細</a> | 
+        <a asp-action="Delete" asp-route-id="@item.UserLessonId" class="btn btn-primary">一覧から削除</a>
+    </li>
+}
+</ul>
 
 <style>
     h4{
         opacity: 0.4;
     }
-
 </style>
