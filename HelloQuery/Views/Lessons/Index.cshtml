@@ -5,9 +5,8 @@
     ViewData["Title"] = "Lesson";
 }
 <body>
-    <div class="col-3">
+    <div class="content">
         <div class="kaitou">
-
             <!--部分ビュー-->
             <div id="partialview-section">
                 <p> @await Html.PartialAsync("_LessonsPartial")</p>
@@ -43,11 +42,12 @@
                 </tr>
             </table>
         </div>
-    
+
         <!--問題一覧-->
-        <div class="side">
-            <div class="col-9">
+        <aside class="side">
+            <div class="side-in">
                 <h4>問題一覧</h4>
+
                 <ul id="lesson-title" style="list-style-type: none;">
                     @foreach (var item in Model.AllLessons)
                     {
@@ -55,8 +55,9 @@
                     }
                 </ul>
             </div>
-        </div>
+        </aside>
     </div>
+
 </body>
 
 <!--JSファイルの呼び出し-->
@@ -65,23 +66,31 @@
 }
 
 <style>
+    .content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+    }
+
     /*サイドバー(問題一覧)*/
     .side {
-        font-size:18px;
-        line-height:2.5;
-        position: absolute;
-		background-color: #8997b8;
-		top: 57px;
-        right: -1px;
-        width:17%;
-        height:100%;
-        aspect-ratio: 5 / 3;
+        width: 20%;
+        background-color: #8997b8;
+        margin-left: 120px;
     }
 
-
-    .kaitou{
-        position: absolute;
-        top: 450px;
-        left: 400px;
+    .side-in {
+        background-color: #8997b8;
+        position: sticky;
+        top: 0;
     }
+
+    .kaitou {
+        width: 80%;
+    }
+
+    input[type="text"] {
+        width: 70%;
+        box-sizing: border-box;
+        padding: 10px;
 </style>

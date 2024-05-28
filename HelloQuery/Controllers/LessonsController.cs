@@ -21,7 +21,7 @@ namespace HelloQuery.Controllers
         {
             var lessons = await _context.Lesson.ToListAsync();
             Lesson selectedLesson;
-            var viewModel = new LessonViewModel();
+            LessonViewModel viewModel = new LessonViewModel();
 
             // idがnullとき最初のLessonを選択
             if (id == null)
@@ -29,7 +29,7 @@ namespace HelloQuery.Controllers
                 selectedLesson = lessons.FirstOrDefault(m => m.LessonId == 1);
 
                 // DiscriptionをHTMLに変換
-                selectedLesson.Description = Markdig.Markdown.ToHtml(selectedLesson.Description);
+                selectedLesson.Description = Markdown.ToHtml(selectedLesson.Description);
             }
             // idがnullでない場合、選択されたLessonを取得
             else
@@ -59,12 +59,14 @@ namespace HelloQuery.Controllers
                 return NotFound();
             }
 
-            var viewModel = new LessonViewModel()
-            {
-                SelectedLesson = lesson,
-            };
+            // DiscriptionをHTMLに変換
+            lesson.Description = Markdown.ToHtml(lesson.Description);
 
-            return PartialView("_LessonsPartial", viewModel.SelectedLesson);
+            LessonViewModel viewModel = new LessonViewModel();
+            viewModel.SelectedLesson = lesson;
+            viewModel.AllLessons = null;
+
+            return PartialView("_LessonsPartial", viewModel);
         }
 
         // 回答するがクリックされたとき: Lessons/Index
