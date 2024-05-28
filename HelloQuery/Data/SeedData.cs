@@ -33,6 +33,76 @@ namespace HelloQuery.Data
                     context.SaveChanges();
                 }
                 // ※※※ここまで※※※
+
+                // Booksテーブルのシード追加 ※データベースにレコードがある場合、シード初期化子が返されレコードが追加されない
+                if (!context.Book.Any())
+                {
+                    var books = new Book[]
+                    {
+                        new Book{ Title = "こころ",
+                                  Author =  "夏目漱石",
+                                  PublicationDate =  new DateTime(1914, 9, 20),
+                                  Pages =  308,
+                                  Price  = 408 },
+
+                        new Book{ Title = "人間失格",
+                                  Author =  "太宰治",
+                                  PublicationDate =  new DateTime(1948, 7, 25),
+                                  Pages =  192,
+                                  Price  = 308 },
+
+                        new Book{ Title = "吾輩は猫である",
+                                  Author =  "夏目漱石",
+                                  PublicationDate =  new DateTime(1905, 10, 6),
+                                  Pages =  592,
+                                  Price  = 660 },
+
+                        new Book{ Title = "ドグラ・マグラ",
+                                  Author =  "夢野久作",
+                                  PublicationDate =  new DateTime(1935, 1, 15),
+                                  Pages =  679,
+                                  Price  = 1276 },
+
+                        new Book{ Title = "羅生門",
+                                  Author =  "芥川龍之介",
+                                  PublicationDate =  new DateTime(1917, 5, 23),
+                                  Pages =  24,
+                                  Price  = 440 },
+
+                        new Book{ Title = "銀河鉄道の夜",
+                                  Author =  "宮沢賢治",
+                                  PublicationDate =  new DateTime(1941, 12, 20),
+                                  Pages =  102,
+                                  Price  = 1800 },
+
+                        new Book{ Title = "走れメロス",
+                                  Author =  "太宰治",
+                                  PublicationDate =  new DateTime(1940, 6, 15),
+                                  Pages =  216,
+                                  Price  = 660 },
+
+                        new Book{ Title = "坊っちゃん",
+                                  Author =  "夏目漱石",
+                                  PublicationDate =  new DateTime(1907, 1, 1),
+                                  Pages =  256,
+                                  Price  = 770 },
+
+                        new Book{ Title = "蜘蛛の糸",
+                                  Author =  "芥川龍之介",
+                                  PublicationDate =  new DateTime(1919, 1, 15),
+                                  Pages =  36,
+                                  Price  = 1600 },
+
+                        new Book{ Title = "斜陽",
+                                  Author =  "太宰治",
+                                  PublicationDate =  new DateTime(1947, 12, 15),
+                                  Pages =  256,
+                                  Price  = 374 }
+                    };
+                    context.Book.AddRange(books);
+                    context.SaveChanges();
+                }
+
                 // Lessonテーブルのシード追加
                 if (!context.Lesson.Any())
                 {
