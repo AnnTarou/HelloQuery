@@ -1,24 +1,25 @@
-﻿@model HelloQuery.Models.Lesson
+﻿@model HelloQuery.Models.LessonViewModel
+
 <body>
     <div>
         <!--タイトル-->
         <div class="Title-block">
-            <h1>@Model.Title</h1>
+            <h1>@Model.SelectedLesson.Title</h1>
         </div>
         
         <!--説明-->
         <div class="description-block1">
-            <p>@Model.Description</p>
+            <p>@Model.SelectedLesson.Description</p>
         </div>
     
         <!--問題文-->
         <div class="description-block2">
-            <p>@Model.Question</p>
+            <p>@Model.SelectedLesson.Question</p>
         </div>
 
         <!--ヒント-->
         <div class="Hint-block">
-            <p>@Model.Hint</p>
+            <p>@Model.SelectedLesson.Hint</p>
         </div>
     </div>
 </body>

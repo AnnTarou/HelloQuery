@@ -21,12 +21,12 @@
 </div>
 
 <!--各種ボタン-->
-<form method="post" asp-controller="Lessons" asp-action="Save">
+<form method="post" asp-controller="UserLessons" asp-action="Create">
     <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
-    <input type="submit" value="保存する" />
+    <input type="submit" value="苦手リストに保存" />
 </form>
 
-<a href="@Url.Action("Index", "Controller", new { id = Model.SelectedLesson.LessonId - 1 })">前の問題</a>
+<a href="@Url.Action("Index", "Controller", new { id = Model.SelectedLesson.LessonId })">もう一度チャレンジする</a>
 <a href="@Url.Action("Index", "Controller", new { id = Model.SelectedLesson.LessonId + 1 })">次の問題</a>
 
 <!--JSファイルの呼び出し-->

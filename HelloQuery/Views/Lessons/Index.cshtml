@@ -1,4 +1,4 @@
-﻿@model IEnumerable<HelloQuery.Models.Lesson>
+﻿@model HelloQuery.Models.LessonViewModel
 
 @{
     Layout = "_LoggedInLayout";
@@ -10,7 +10,7 @@
 
             <!--部分ビュー-->
             <div id="partialview-section">
-                <p>@await Html.PartialAsync("_LessonsPartial", (Lesson)ViewBag.SelectedLesson)</p>
+                <p> @await Html.PartialAsync("_LessonsPartial")</p>
             </div>
 
             <br />
@@ -22,7 +22,7 @@
                     <td colspan="2">
                         <form method="post" asp-controller="Lessons" asp-action="Answer">
                             <input type="text" name="answer" placeholder="回答を入力してください">
-                            <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
+                            <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
                         </form>
                     </td>
                 </tr>
@@ -36,7 +36,7 @@
                     <td>
                         <!-- あきらめるボタンのフォーム -->
                         <form method="post" asp-controller="Lessons" asp-action="GiveUp">
-                            <input type="hidden" id="selected-lesson-id" name="lessonId" value="@ViewBag.SelectedLessonId" />
+                            <input type="hidden" id="selected-lesson-id" name="lessonId" value="@Model.SelectedLesson.LessonId" />
                             <input type="submit" value="あきらめる">
                         </form>
                     </td>
@@ -49,7 +49,7 @@
             <div class="col-9">
                 <h4>問題一覧</h4>
                 <ul id="lesson-title" style="list-style-type: none;">
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.AllLessons)
                     {
                         <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
                     }
@@ -61,7 +61,6 @@
 
 <!--JSファイルの呼び出し-->
 @section Scripts {
-    <script src="~/js/design.js"></script>
     <script src="~/js/lessonpartialview.js"></script>
 }
 

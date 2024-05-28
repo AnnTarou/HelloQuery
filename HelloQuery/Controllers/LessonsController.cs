@@ -1,6 +1,6 @@
 ﻿using HelloQuery.Data;
 using HelloQuery.Models;
-
+using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,26 +15,36 @@ namespace HelloQuery.Controllers
             _context = context;
         }
 
-        // GETメソッド: Lessons/Index
+        //  Lessons/Index:GETアクセスあったとき
         [HttpGet]
         public async Task<IActionResult> Index(int? id)
         {
             var lessons = await _context.Lesson.ToListAsync();
+            Lesson selectedLesson;
+            var viewModel = new LessonViewModel();
 
-            // idがnullまたは0のとき最初のLessonを選択
-            if (id == null || id == 0)
+            // idがnullとき最初のLessonを選択
+            if (id == null)
             {
-                var selectedLesson = lessons.FirstOrDefault(m => m.LessonId == 1);
-                ViewBag.SelectedLesson = selectedLesson;
+                selectedLesson = lessons.FirstOrDefault(m => m.LessonId == 1);
+
+                // DiscriptionをHTMLに変換
+                selectedLesson.Description = Markdig.Markdown.ToHtml(selectedLesson.Description);
             }
             // idがnullでない場合、選択されたLessonを取得
             else
             {
-                var selectedLesson = lessons.FirstOrDefault(m => m.LessonId == id);
-                ViewBag.SelectedLesson = selectedLesson;
+                selectedLesson = lessons.FirstOrDefault(m => m.LessonId == id);
+
+                // DiscriptionをHTMLに変換
+                selectedLesson.Description = Markdown.ToHtml(selectedLesson.Description);
             }
 
-            return View(lessons);
+            // ViewModelに選択されたLessonと全Lessonをセット
+            viewModel.SelectedLesson = selectedLesson;
+            viewModel.AllLessons = lessons;
+
+            return View(viewModel);
         }
 
         // 問題が選択されたときの部分ビュー作成メソッド
@@ -49,7 +59,12 @@ namespace HelloQuery.Controllers
                 return NotFound();
             }
 
-            return PartialView("_LessonsPartial", lesson);
+            var viewModel = new LessonViewModel()
+            {
+                SelectedLesson = lesson,
+            };
+
+            return PartialView("_LessonsPartial", viewModel.SelectedLesson);
         }
 
         // 回答するがクリックされたとき: Lessons/Index

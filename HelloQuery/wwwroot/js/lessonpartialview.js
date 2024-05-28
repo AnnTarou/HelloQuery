@@ -2,7 +2,6 @@
 // 同時にselected-lesson-idに選択されている問題のIDを格納
 $('.lesson').on('click', function () {
     var lessonId = $(this).data('id');
-    $('#selected-lesson-id').val(lessonId);
     $.ajax({
         url: '/Lessons/SelectLesson',
         data: { id: lessonId },

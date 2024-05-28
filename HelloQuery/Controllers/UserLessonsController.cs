@@ -4,7 +4,6 @@ using HelloQuery.Filter;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.CodeAnalysis.FlowAnalysis;
 
 namespace HelloQuery.Controllers
 {
@@ -22,36 +21,53 @@ namespace HelloQuery.Controllers
         // UserLessons/Index:GETアクセスあったとき
         public async Task<IActionResult> Index()
         {
-            var helloQueryContext = _context.UserLesson.Include(u => u.Lesson).Include(u => u.User);
-            return View(await helloQueryContext.ToListAsync());
+            // 現在ログインしているユーザーを取得
+            User loginUser = (User)HttpContext.Items["User"];
+
+            // ログインしていない場合はNotFoundを返す
+            if (loginUser == null)
+            {
+                return NotFound();
+            }
+
+            // ログインしているユーザーのUserLessonを取得
+            var userLessons = await _context.UserLesson
+                .Include(ul => ul.Lesson)
+                .Where(ul => ul.UserId == loginUser.UserId)
+                .ToListAsync();
+           
+            return View(userLessons);
         }
 
-        // GET: UserLessons/Details/5
+        // 「詳細」ボタンがおされたとき　UserLessons/Details：GETアクセスあったとき
         public async Task<IActionResult> Details(int? id)
         {
+            //LessonIdの引数が入ってこなかった場合エラーページ表示
             if (id == null)
             {
                 return NotFound();
             }
 
-            var userLesson = await _context.UserLesson
-                .Include(u => u.Lesson)
-                .Include(u => u.User)
-                .FirstOrDefaultAsync(m => m.UserLessonId == id);
-            if (userLesson == null)
+            // ログインしているユーザーを取得
+            User loginUser = (User)HttpContext.Items["User"];
+
+            // ログインしていない場合はNotFoundを返す
+            if (loginUser == null)
             {
                 return NotFound();
             }
 
-            return View(userLesson);
-        }
+            var lesson = await _context.UserLesson
+                .Include(u => u.Lesson)
+                .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId && m.LessonId == id);
 
-        // GET: UserLessons/Create
-        public IActionResult Create()
-        {
-            ViewData["LessonId"] = new SelectList(_context.Lesson, "LessonId", "LessonId");
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Email");
-            return View();
+            // ユーザーが直接このアドレスにアクセスした場合はNotFoundを返す
+            if (lesson == null)
+            {
+                return NotFound();
+            }
+
+            return View(lesson);
         }
 
         // 「苦手リストに追加」が押されたとき　/　UserLessons/Create：POSTメソッド
@@ -77,9 +93,7 @@ namespace HelloQuery.Controllers
             UserLesson userLesson = new UserLesson()
             {
                 UserId = loginUser.UserId,
-                LessonId = (int)lessonId,
-                User = loginUser,
-                Lesson = await _context.Lesson.FindAsync(lessonId)
+                LessonId = (int)lessonId
             };
 
             // UserLessonをコンテキストに追加
@@ -94,15 +108,18 @@ namespace HelloQuery.Controllers
         // 苦手リストの「削除」ボタンがおされたとき　UserLessons/Delete：POSTメソッド
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
             var userLesson = await _context.UserLesson.FindAsync(id);
+
+            // UserLessonがDBに見つかった場合は削除
             if (userLesson != null)
             {
                 _context.UserLesson.Remove(userLesson);
             }
 
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
