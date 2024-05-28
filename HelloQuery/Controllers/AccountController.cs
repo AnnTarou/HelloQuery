@@ -1,6 +1,5 @@
 ﻿using HelloQuery.Data;
 using HelloQuery.Models;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

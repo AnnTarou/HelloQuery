@@ -1,19 +1,25 @@
-﻿@model LessonViewModel
+﻿@model HelloQuery.Models.LessonViewModel
 @{
     Layout = "_LoggedInLayout";
     ViewData["Title"] = "Answer";
 }
 
-<!--問題一覧のトグルバー-->
-<div id="toggle-bar" style="position: fixed; top: 0; right: 0; z-index: 100;">
-    <button id="toggle-button">問題一覧▼</button>
-    <ul id="lesson-title" style="list-style-type: none;">
-        @foreach (var item in Model.AllLessons)
-        {
-            <li class="lesson" data-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</li>
-        }
-    </ul>
-</div>
+<!--問題一覧バー-->
+<aside class="side">
+    <div class="side-in">
+        <h4>問題一覧</h4>
+
+        <ul id="lesson-title" style="list-style-type: none;">
+            @foreach (var item in Model.AllLessons)
+            {
+                <li>
+                    <a asp-controller="Lessons" asp-action="Index" asp-route-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</a>
+                </li>
+            }
+        </ul>
+    </div>
+</aside>
+
 
 <!--回答＆解説の部分ビュー-->
 <div id="partial-answerview-container">
@@ -26,12 +32,31 @@
     <input type="submit" value="苦手リストに保存" />
 </form>
 
-<a href="@Url.Action("Index", "Controller", new { id = Model.SelectedLesson.LessonId })">もう一度チャレンジする</a>
-<a href="@Url.Action("Index", "Controller", new { id = Model.SelectedLesson.LessonId + 1 })">次の問題</a>
+<a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })">もう一度チャレンジする</a> | 
+<a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })">次の問題</a>
 
 <!--JSファイルの呼び出し-->
 @section Scripts {
-    <script src="~/js/design.js"></script>
     <script src="~/js/answerpartialview.js"></script>
 }
+
+<style>
+    .container {
+        position: relative;
+    }
+    .side {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+    }
+
+    .side-in {
+        background-color: #8997b8;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+    }
+</style>
+
 

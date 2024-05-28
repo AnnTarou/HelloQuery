@@ -7,7 +7,6 @@
 
 <h1 class="text-center">マイページ</h1>
 
-<div>
     <hr />
 
     <dl class="row">
@@ -20,18 +19,16 @@
         </div>
 
         <div class="details">
-            @Html.DisplayNameFor(model => model.Password) :  セキュリティ保護のためパスワードは表示できません@*@Html.DisplayFor(model => model.Password)*@
+            @Html.DisplayNameFor(model => model.Password) :  <span>セキュリティ保護のためパスワードは表示できません</span>
         </div>
     </dl>
-</div>
 <br />
 <br />
 <div class="text-center">
     <p><a asp-action="Edit" asp-route-id="@Model?.UserId" class="btn btn--cubic">編集</a></p>
     <p><a　asp-action ="Delete" class="btn btn--cubic">削除</a></p>
-    <p><a href="https://localhost:7208/Lessons" class="btn btn--cubic">レッスンへ戻る</a></p>
+    <p><a href=@Url.Action("Index","Lessons") class="btn btn--cubic">レッスンへ戻る</a></p>
 </div>
-
 
 <style>
     a{

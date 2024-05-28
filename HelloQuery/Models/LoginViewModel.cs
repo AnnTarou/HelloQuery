@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HelloQuery.Models
 {
@@ -9,7 +10,7 @@ namespace HelloQuery.Models
         [Display(Name = "メールアドレス")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "必須項目です")]
+        [Required(ErrorMessage = "パスワードを入力してください")]
         [DataType(DataType.Password)]
         [Range(6, 10)]
         [Display(Name = "パスワード")]

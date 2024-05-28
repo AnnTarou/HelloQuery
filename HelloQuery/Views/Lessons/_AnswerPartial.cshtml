@@ -1,12 +1,11 @@
-﻿@model HelloQuery.Models.Lesson
+﻿@model HelloQuery.Models.LessonViewModel
 
 <div>
-    <p>>@Model.Question</p>
+    @Html.Raw(@Model.SelectedLesson.Question);
 
-    <p>@Model.Answer</p>
+    <p> @Html.Raw(@Model.SelectedLesson.Answer)</p>
 
     <div class="description-block">
-        <p>@Model.Reference</p>
-    </div> 
+        <p> @Html.Raw(@Model.SelectedLesson.Reference)</p>
+    </div>
 </div>
-

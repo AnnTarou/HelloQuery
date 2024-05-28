@@ -15,21 +15,32 @@
 {
     <h4>苦手リストはありません。この調子で頑張りましょう！</h4>
 }
-
-<!--苦手リストがある場合の苦手一覧リスト-->
-<ul list-style:none>
-@foreach (var item in Model) 
-{    
-    <li>
-        <a asp-action="Index" asp-controller="Lesson" asp-route-id="@item.LessonId">@item.Lesson.Title</a>
-        <a asp-action="Details" asp-route-id="@item.LessonId" class="btn btn-primary">詳細</a> | 
-        <a asp-action="Delete" asp-route-id="@item.UserLessonId" class="btn btn-primary">一覧から削除</a>
-    </li>
+else
+{
+    <!--苦手リストがある場合の苦手一覧リスト-->
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>
+                <a asp-action="Index" asp-controller="Lessons" asp-route-id="@item.LessonId">@item.Lesson.Title</a>
+                <a asp-action="Details" asp-route-id="@item.LessonId" class="btn btn-outline-primary">詳細</a> |
+                <form method="post" asp-action="Delete" asp-controller="UserLessons">
+                    <button type="submit" class="btn btn-outline-danger" name="id" value=@item.UserLessonId>一覧から削除</button>
+                </form>
+            </li>
+        }
+    </ul>    
 }
-</ul>
 
 <style>
-    h4{
+    h4 {
         opacity: 0.4;
+    }
+
+    ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
     }
 </style>

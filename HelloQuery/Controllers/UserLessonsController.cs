@@ -1,8 +1,7 @@
 ﻿using HelloQuery.Data;
-using HelloQuery.Models;
 using HelloQuery.Filter;
+using HelloQuery.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelloQuery.Controllers
@@ -35,7 +34,7 @@ namespace HelloQuery.Controllers
                 .Include(ul => ul.Lesson)
                 .Where(ul => ul.UserId == loginUser.UserId)
                 .ToListAsync();
-           
+
             return View(userLessons);
         }
 
@@ -70,7 +69,7 @@ namespace HelloQuery.Controllers
             return View(lesson);
         }
 
-        // 「苦手リストに追加」が押されたとき　/　UserLessons/Create：POSTメソッド
+        // 「苦手リストに保存」が押されたとき　/　UserLessons/Create：POSTメソッド
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int? lessonId)
@@ -84,9 +83,20 @@ namespace HelloQuery.Controllers
             // 現在ログインしているユーザーを取得
             User loginUser = (User)HttpContext.Items["User"];
 
+            // ログインユーザーがnullの場合はログイン画面にリダイレクト
             if (loginUser == null)
             {
-                return NotFound();
+                return RedirectToAction("Login", "Account");
+            }
+
+            // 現在のユーザーがすでにlessonIdを持っているかどうかを確認
+            var existingUserLesson = await _context.UserLesson
+                .FirstOrDefaultAsync(ul => ul.UserId == loginUser.UserId && ul.LessonId == lessonId);
+
+            // 現在のユーザーがすでにlessonIdを持っている場合は何もしない
+            if (existingUserLesson != null)
+            {
+                return RedirectToAction("AnswerPage","Lessons", new {id = lessonId});
             }
 
             // UserLessonのインスタンスを生成
@@ -96,19 +106,18 @@ namespace HelloQuery.Controllers
                 LessonId = (int)lessonId
             };
 
-            // UserLessonをコンテキストに追加
             _context.Add(userLesson);
 
+            // データベースの変更を保存
             await _context.SaveChangesAsync();
 
-            // UserLessonのIndexにリダイレクト
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "UserLessons");
         }
 
-        // 苦手リストの「削除」ボタンがおされたとき　UserLessons/Delete：POSTメソッド
-        [HttpPost, ActionName("Delete")]
+        // 苦手リストの「削除」ボタンがおされたとき
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             var userLesson = await _context.UserLesson.FindAsync(id);
 
