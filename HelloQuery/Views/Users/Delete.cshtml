@@ -29,13 +29,15 @@
 
     <form method="post" asp-controller="Users" asp-action="Delete">
         <input type="hidden" name="id" value="@Model.UserId" />
+        <div class="text-center">
 		<label class="open" for="popup"><p class="btn btn-danger">削除</p></label>
+        </div>
 		<input type="checkbox" id="popup">
 		    <div class="overlay">
 			    <div class="window">
 				<label class="close" for="popup">×</label>
 				<label class="close" for="popup">×</label>
-				<h4 class="text">
+				<h4 class="text"><br />
 					このアカウントを本当に削除しますか？
 
                     <br />
@@ -51,7 +53,7 @@
 		</div>
     </form>
 
-        <p><a asp-action="Details" asp-controller="Users"  class="btn btn--cubic">マイページに戻る</a></p>
+        <p class="text-center"><a asp-action="Details" asp-controller="Users"  class="btn btn--cubic">マイページに戻る</a></p>
 </div>
 
 
