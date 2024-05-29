@@ -22,17 +22,21 @@ else
         @foreach (var item in Model)
         {
             <li>
-                <a asp-action="Index" asp-controller="Lessons" asp-route-id="@item.LessonId">@item.Lesson.Title</a>
-                <a asp-action="Details" asp-route-id="@item.LessonId" class="btn btn-outline-primary">詳細</a> |
-                <form method="post" asp-action="Delete" asp-controller="UserLessons">
-                    <button type="submit" class="btn btn-outline-danger" name="id" value=@item.UserLessonId>一覧から削除</button>
-                </form>
+                <table>
+                    <td><a asp-action="Index" asp-controller="Lessons" asp-route-id="@item.LessonId">@item.Lesson.Title</a></td>
+                    <td class="align-right">
+                        <a asp-action="Details" asp-route-id="@item.LessonId" class="button btn-outline-primary">詳細</a>
+                        <form method="post" asp-action="Delete" asp-controller="UserLessons">
+							<button type="submit" class="button btn-outline-danger" name="id" value=@item.UserLessonId>一覧から削除</button>
+						</form>                       
+                    </td>
+				</table>
             </li>
+           <hr width="100%">
         }
     </ul>    
 }
-
-<style>
+    <style>
     h4 {
         opacity: 0.4;
     }
@@ -42,5 +46,43 @@ else
         display: flex;
         flex-direction: column;
         align-items: start;
+    }
+
+    td{
+        font-size:29px;
+        line-height:2.5;
+    }
+
+    .btn-outline-primary {
+        width:5rem;
+        height:3rem;
+        font-size: 20px;
+        background-color:red;
+        color:white;
+        text-align:center;
+        position:absolute;
+        right:20%;
+    }
+
+    .btn-outline-primary:hover{
+        background-color:white;
+        color:red;
+    }
+
+    .btn-outline-danger {
+        width: 9rem;
+        height: 3rem;
+        font-size: 19px;
+        background-color: red;
+        color: white;
+        text-align: center;
+        position: absolute;
+        right:9%;
+
+    }
+
+    .btn-outline-danger:hover{
+         background-color: white;
+         color: red;
     }
 </style>
