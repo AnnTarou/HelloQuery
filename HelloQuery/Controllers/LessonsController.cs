@@ -4,6 +4,8 @@ using HelloQuery.Method;
 using HelloQuery.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace HelloQuery.Controllers
 {
@@ -80,9 +82,6 @@ namespace HelloQuery.Controllers
         [HttpPost]
         public async Task<IActionResult> Answer(string answer, int lessonId)
         {
-            // 入力された文字列を大文字に変換する変数
-            string conversionAnswer;
-
             // idをもとにLessonを取得
             var lesson = await _context.Lesson
                 .FirstOrDefaultAsync(m => m.LessonId == lessonId);
@@ -94,17 +93,27 @@ namespace HelloQuery.Controllers
             }
 
             // 文字が入力されていなかったらIndexにリダイレクト
-            if (answer == null || answer == "")
+            if (string.IsNullOrWhiteSpace(answer))
             {
                 return RedirectToAction("Index", new { id = lessonId });
             }
-            else
-            {
-                // 入力された文字列を大文字に変換
-                conversionAnswer = answer.ToUpper();
-            }
 
-            if (conversionAnswer == lesson.Answer.ToUpper())
+            // 正規表現パターンを定義
+            string pattern = @"```\s*\r?\n([\s\S]*?)\r?\n```";
+
+            // 正規表現を使ってAnswerカラムからSQL文を抽出
+            string lessonAnswer = Regex.Match(lesson.Answer, pattern).Groups[1].Value;
+
+            // 整形後の文字列を出力ウィンドウに表示 ※※※確認用※※※
+            Debug.WriteLine("Formatted SQL query:");
+            Debug.WriteLine(lessonAnswer);
+
+            // ユーザーの入力内容と整形後のSQL文から改行文字を取り除く
+            string userAnswer = Regex.Replace(answer, @"\s+", " ");
+            string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
+
+            // 改行を取り除いた文字列を大文字に変換して比較
+            if (userAnswer.ToUpper() == formattedLessonAnswer.ToUpper())
             {
                 return RedirectToAction("AnswerPage", new { id = lessonId });
             }
