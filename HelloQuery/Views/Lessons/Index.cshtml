@@ -25,7 +25,7 @@
                     <input type="submit" value="回答する" class="answer-button">
             </form>
                     <form method="post" asp-controller="Lessons" asp-action="GiveUp">
-                        <input type="hidden" id="selected-lesson-id" name="lessonId" value="@Model.SelectedLesson.LessonId" />
+                        <input type="hidden" id="selected-lesson-id" name="lessonId" value=@Model.SelectedLesson.LessonId />
                         <input type="submit" value="あきらめる" class="giveup-button">
                     </form>
                 </div>

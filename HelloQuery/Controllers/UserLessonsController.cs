@@ -1,5 +1,6 @@
 ﻿using HelloQuery.Data;
 using HelloQuery.Filter;
+using HelloQuery.Method;
 using HelloQuery.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -65,6 +66,9 @@ namespace HelloQuery.Controllers
             {
                 return NotFound();
             }
+
+            // マークダウンの内容をHTMLに変換
+            MarkdownConverter.ConvertMarkdownToHtml(lesson.Lesson);
 
             return View(lesson);
         }
