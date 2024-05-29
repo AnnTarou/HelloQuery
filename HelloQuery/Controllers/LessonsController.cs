@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace HelloQuery.Controllers
 {
@@ -112,8 +114,15 @@ namespace HelloQuery.Controllers
             string userAnswer = Regex.Replace(answer, @"\s+", " ");
             string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
 
-            // 改行を取り除いた文字列を大文字に変換して比較
-            if (userAnswer.ToUpper() == formattedLessonAnswer.ToUpper())
+            // 改行を取り除いた文字列を使ってデータを取得し、DataTableに格納
+            DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
+            DataTable userDataTable = await GetDataTableAsync(userAnswer);
+
+            // DataTableの内容を比較
+            bool isCorrect = CompareDataTables(lessonDataTable, userDataTable);
+
+            // 比較結果が正解の場合はAnswerページへ遷移、不正解の場合は同じページに留まる
+            if (isCorrect)
             {
                 return RedirectToAction("AnswerPage", new { id = lessonId });
             }
@@ -121,6 +130,48 @@ namespace HelloQuery.Controllers
             {
                 return RedirectToAction("Index", new { id = lessonId });
             }
+        }
+
+        // Answerカラムとユーザーが入力したSQL文をそれぞれ実行し、結果をDataTableに格納
+        private async Task<DataTable> GetDataTableAsync(string sql)
+        {
+            // データベースに接続（usingにすることでリソースを自動的に開放）
+            using (var connection = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=aspnet-53bc9b9d-9d6a-45d4-8429-2a2761773502;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;"))
+            {
+                // 非同期的にデータベース接続をオープン
+                await connection.OpenAsync();
+                // 指定されたSQLクエリを実行
+                using (var command = new SqlCommand(sql, connection))
+                {
+                    // SQLクエリの結果をDataTableに格納
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        var dataTable = new DataTable();
+                        // データベースから取得したデータをDataTableに読み込む
+                        adapter.Fill(dataTable);
+                        return dataTable;
+                    }
+                }
+            }
+        }
+
+        // 2つのDataTableの内容を比較し、一致していればtrueを返す
+        private bool CompareDataTables(DataTable dt1, DataTable dt2)
+        {
+            // 両方のDataTableの行数と列数が一致していなければ処理を抜ける
+            if (dt1.Rows.Count != dt2.Rows.Count || dt1.Columns.Count != dt2.Columns.Count)
+                return false;
+
+            // 一致している場合は各セルの値を比較
+            for (int i = 0; i < dt1.Rows.Count; i++)
+            {
+                for (int j = 0; j < dt1.Columns.Count; j++)
+                {
+                    if (!Equals(dt1.Rows[i][j], dt2.Rows[i][j]))
+                        return false;
+                }
+            }
+            return true;
         }
 
         // あきらめるがクリックされたとき: Lessons/Index
