@@ -1,7 +1,7 @@
 ﻿using HelloQuery.Data;
 using HelloQuery.Filter;
+using HelloQuery.Method;
 using HelloQuery.Models;
-using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,7 +36,7 @@ namespace HelloQuery.Controllers
                 selectedLesson = lessons.FirstOrDefault(m => m.LessonId == 1);
 
                 // マークダウンの内容をHTMLに変換
-                ConvertMarkdownToHtml(selectedLesson);
+                MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
             }
             // idがnullでない場合、選択されたLessonを取得
             else
@@ -44,7 +44,7 @@ namespace HelloQuery.Controllers
                 selectedLesson = lessons.FirstOrDefault(m => m.LessonId == id);
 
                 // マークダウンの内容をHTMLに変換
-                ConvertMarkdownToHtml(selectedLesson);
+                MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
             }
 
             // ViewModelに選択されたLessonと全Lessonをセット
@@ -67,7 +67,7 @@ namespace HelloQuery.Controllers
             }
 
             // マークダウンの内容をHTMLに変換
-            ConvertMarkdownToHtml(selectedLesson);
+            MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
 
             LessonViewModel viewModel = new LessonViewModel();
             viewModel.SelectedLesson = selectedLesson;
@@ -153,7 +153,7 @@ namespace HelloQuery.Controllers
             }
 
             // マークダウンの内容をHTMLに変換
-            ConvertMarkdownToHtml(viewModel.SelectedLesson);
+            MarkdownConverter.ConvertMarkdownToHtml(viewModel.SelectedLesson);
 
             // 全Lessonを取得
             viewModel.AllLessons = await _context.Lesson.ToListAsync();
@@ -177,7 +177,7 @@ namespace HelloQuery.Controllers
             }
 
             // マークダウンの内容をHTMLに変換
-            ConvertMarkdownToHtml(lesson);
+            MarkdownConverter.ConvertMarkdownToHtml(lesson);
 
             viewModel.SelectedLesson = lesson;
             viewModel.AllLessons = null;
@@ -209,16 +209,6 @@ namespace HelloQuery.Controllers
 
             // IndexのGetメソッドへidを送付
             return RedirectToAction("Index", new { id = randomLessonId });
-        }
-
-        // マークダウンをHTMLに変換するメソッド
-        public void ConvertMarkdownToHtml(Lesson selectedLesson)
-        {
-            selectedLesson.Description = Markdown.ToHtml(selectedLesson.Description);
-            selectedLesson.Question = Markdown.ToHtml(selectedLesson.Question);
-            selectedLesson.Hint = Markdown.ToHtml(selectedLesson.Hint);
-            selectedLesson.Answer = Markdown.ToHtml(selectedLesson.Answer);
-            selectedLesson.Reference = Markdown.ToHtml(selectedLesson.Reference);
         }
     }
 }
