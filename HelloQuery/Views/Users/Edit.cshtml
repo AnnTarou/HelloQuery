@@ -38,17 +38,21 @@
             <br />
 
             <div class="text-center">
-                <input type="submit" value="上書き保存" class="btn btn-primary" />
+					<p><input type="submit" value="上書き保存" class="btn btn-primary" /></p>
             </div>
+
+
         </form>
     </div>
 </div>
 
-<br />
+
 
 <div class="text-center">
-    <a asp-action="Details" class="btn btn-primary">戻る</a>
+	<p><a asp-action="Details" class="btn btn-primary">戻る</a></p>
 </div>
+
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
