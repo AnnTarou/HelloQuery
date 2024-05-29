@@ -13,7 +13,7 @@
 
         <div class="form-group">
             <label asp-for="UserName" class="control-label">ニックネーム</label>
-            <p class="notion">※25文字以内で入力してください</p>
+			<p class="notion"><b>※25文字以内で入力してください</b></p>
             <p><input asp-for="UserName" class=" text-center" /></p>
             <span asp-validation-for="UserName" class="text-danger"></span>
         </div>
@@ -26,7 +26,7 @@
 
         <div class="form-group">
             <label asp-for="Password" class="control-label"></label>
-            <p class="notion">※6文字以内で入力してください</p>
+			<p class="notion"><b>※6文字以上で入力してください</b></p>
             <p><input asp-for="Password" class="text-center" /></p>
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
@@ -69,8 +69,12 @@
         height: 2.7rem;
     }
 
+    .control-label{
+        font-size: 23px;
+    }
+
     .notion{
-        font-size: 10px;
-        color: red;
+        font-size: 20px;
+        color:yellow;
     }
 </style>
