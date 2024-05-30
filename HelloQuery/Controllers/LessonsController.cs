@@ -160,6 +160,15 @@ namespace HelloQuery.Controllers
                         var dataTable = new DataTable();
                         // データベースから取得したデータをDataTableに読み込む
                         adapter.Fill(dataTable);
+
+                        // DataTableの内容を出力ウィンドウに表示 ※※※確認用※※※
+                        Debug.WriteLine("DataTable Contents:");
+                        foreach (DataRow row in dataTable.Rows)
+                        {
+                            var fields = row.ItemArray.Select(field => field.ToString());
+                            Debug.WriteLine(string.Join(", ", fields));
+                        }
+
                         return dataTable;
                     }
                 }
