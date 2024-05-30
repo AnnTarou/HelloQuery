@@ -1,22 +1,63 @@
 ﻿@model HelloQuery.Models.LessonViewModel
 
 <body>
-    <div>
-        @Html.Raw(@Model.SelectedLesson.Question);
+    <div class="text-center">
+        <h1>解答＆解説</h1><hr />
 
-        <p> @Html.Raw(@Model.SelectedLesson.Answer)</p>
+		<p class="mondai"><span>問題</span> @Html.Raw(@Model.SelectedLesson.Question)</p>
+        <hr  />
+        
+        <p class="kaitou"><span>解答</span> @Html.Raw(@Model.SelectedLesson.Answer)</p>
+        <hr />
 
+		<p class="kaisetsu"><span>解説</span></p>
         <div class="description-block">
-            <p> @Html.Raw(@Model.SelectedLesson.Reference)</p>
+             @Html.Raw(@Model.SelectedLesson.Reference)
         </div>
+
+
+        <hr />
+
+        <br />
 
         <!--各種ボタン-->
         <form method="post" asp-controller="UserLessons" asp-action="Create">
             <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
-            <input type="submit" value="苦手リストに保存" />
+			<p><input type="submit" value="苦手リストに保存" class="btn btn--cubic" /></p>
         </form>
 
-        <a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })">もう一度チャレンジする</a> |
-        <a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })">次の問題</a>
+		<p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })"><button class="btn btn--cubic">もう一度チャレンジする</button></a></p>
+		<p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })"><button class="btn btn--cubic">次の問題</button></a></p>
     </div>
  </body>
+
+ <style>
+     .btn{
+         position:sticky;
+         bottom:140px;
+         font-size:20px;
+     }
+
+     h1{
+        font-size: 43px;
+        display: inline-block;
+        transform: skewX(-15deg);
+    }
+
+     .text-center {
+		font-size: 26px;
+    }
+
+    .description-block {
+        display: flex;
+        justify-content: center;
+    }
+    .mondai, .kaitou, .kaisetsu{
+        line-height:2.5;
+    }
+
+    .mondai span, .kaitou span, .kaisetsu span {
+        background: linear-gradient(transparent 50%, #653616 50%);
+    }
+
+ </style>
