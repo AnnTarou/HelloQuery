@@ -5,38 +5,67 @@
     ViewData["Title"] = "詳細";
 }
 
-<h1>@Model.Lesson.Title</h1>
+<h1>― @Model.Lesson.Title ―</h1>
 
 <div>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            概要
-        </dt>
+			<span>概要</span>
         <dd class = "col-sm-10">
             @Html.Raw(Model.Lesson.Description)
         </dd>
+        <hr />
         <dt class = "col-sm-2">
-            問題
+			<span>問題</span>
         </dt>
         <dd class = "col-sm-10">
             @Html.Raw(Model.Lesson.Question)
         </dd>
+        <hr />
         <dt class = "col-sm-2">
-            解答
+			<span>解答</span>
         </dt>
         <dd class="col-sm-10">
             @Html.Raw(Model.Lesson.Answer)
         </dd>
+        <hr />
         <dt class="col-sm-2">
-            解説
+			<span>解説</span>
         </dt>
         <dd class="col-sm-10">
             @Html.Raw(Model.Lesson.Reference)
-        </dd>                     
+        </dd>
+        <hr />
     </dl>
 </div>
-<div>
-    <a asp-action="Index" asp-controller="Lessons">レッスンに戻る</a> |
-    <a asp-action="Index">苦手リスト一覧に戻る</a>
+<div class="text-center">
+	<p><a asp-action="Index" asp-controller="Lessons" class="btn btn--cubic">レッスンに戻る</a></p>
+	<p><a asp-action="Index" class="btn btn--cubic">苦手リスト一覧に戻る</a></p>
 </div>
+
+<style>
+    .col-sm-2{
+        font-size:22px;
+        text-align:center;
+        color:white;
+    }
+
+    .col-sm-10{
+        font-size:19px;
+    }
+
+    .btn{
+        font-size:19px;
+    }
+
+    .col-sm-2 span {
+        background: linear-gradient(transparent 50%, #D2691E 50%);
+        padding: 0 0.1em;
+    }
+
+    h1{
+        display: inline-block;
+        transform: skewX(-15deg);
+    }
+</style>
