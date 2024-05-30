@@ -114,22 +114,31 @@ namespace HelloQuery.Controllers
             string userAnswer = Regex.Replace(answer, @"\s+", " ");
             string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
 
-            // 改行を取り除いた文字列を使ってデータを取得し、DataTableに格納
-            DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
-            DataTable userDataTable = await GetDataTableAsync(userAnswer);
-
-            // DataTableの内容を比較
-            bool isCorrect = CompareDataTables(lessonDataTable, userDataTable);
-
-            // 比較結果が正解の場合はAnswerページへ遷移、不正解の場合は同じページに留まる
-            if (isCorrect)
+            try
             {
-                return RedirectToAction("AnswerPage", new { id = lessonId });
+                // 改行を取り除いた文字列を使ってデータを取得し、DataTableに格納
+                DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
+                DataTable userDataTable = await GetDataTableAsync(userAnswer);
+
+                // DataTableの内容を比較
+                bool isCorrect = CompareDataTables(lessonDataTable, userDataTable);
+
+                // 比較結果が正解の場合はAnswerページへ遷移、不正解の場合は同じページに留まる
+                if (isCorrect)
+                {
+                    return RedirectToAction("AnswerPage", new { id = lessonId });
+                }
+                else
+                {
+                    return RedirectToAction("Index", new { id = lessonId });
+                }
             }
-            else
+            catch (SqlException ex)
             {
+                // SQL文として成立しない場合はIndexにリダイレクト
                 return RedirectToAction("Index", new { id = lessonId });
             }
+
         }
 
         // Answerカラムとユーザーが入力したSQL文をそれぞれ実行し、結果をDataTableに格納
