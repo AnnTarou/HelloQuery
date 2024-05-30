@@ -1,11 +1,22 @@
 ﻿@model HelloQuery.Models.LessonViewModel
 
-<div>
-    @Html.Raw(@Model.SelectedLesson.Question);
+<body>
+    <div>
+        @Html.Raw(@Model.SelectedLesson.Question);
 
-    <p> @Html.Raw(@Model.SelectedLesson.Answer)</p>
+        <p> @Html.Raw(@Model.SelectedLesson.Answer)</p>
 
-    <div class="description-block">
-        <p> @Html.Raw(@Model.SelectedLesson.Reference)</p>
+        <div class="description-block">
+            <p> @Html.Raw(@Model.SelectedLesson.Reference)</p>
+        </div>
+
+        <!--各種ボタン-->
+        <form method="post" asp-controller="UserLessons" asp-action="Create">
+            <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
+            <input type="submit" value="苦手リストに保存" />
+        </form>
+
+        <a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })">もう一度チャレンジする</a> |
+        <a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })">次の問題</a>
     </div>
-</div>
+ </body>
