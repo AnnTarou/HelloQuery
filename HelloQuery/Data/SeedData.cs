@@ -133,20 +133,12 @@ namespace HelloQuery.Data
                                     Reference = "- `SELECT DISTINCT author`: 著者の重複を削除して取得します。\r\n- `FROM books`: 書籍テーブルからデータを取得します。\r\n" },
 
                         new Lesson{ Category = "基本的な検索",
-                                    Title =  "ORDER BY句",
-                                    Description = "このページでは、取得したデータを特定の条件で並べ替えるためのORDER BY句について学びます。\r\n### ORDER BY句について\r\nORDER BY句は、SELECT文で取得したデータを、指定したカラムの値に基づいて昇順または降順に並べ替えるために使用します。\r\n\r\n構文\r\n```\r\nSELECT カラム FROM テーブル名 ORDER BY カラム;\r\n```\r\n上記の例では、`テーブル名`から取得した`カラム`のデータを、`カラム`の値に基づいて昇順に並べ替えます。\r\n",
-                                    Question = "タイトル、著者、出版日の一覧を出版日順に並べてください。\r\n",
-                                    Hint = "- タイトル、著者、出版日を取得するには `SELECT` を使用します。\r\n- データを並べ替えるには `ORDER BY` を使用します。\r\n",
-                                    Answer = "```\r\nSELECT title, author, publication_date\r\n  FROM books\r\n **ORDER BY** publication_date;\r\n```\r\n",
-                                    Reference = "- `SELECT title, author, publication_date`: タイトル、著者、出版日を取得します。\r\n- `FROM books`: 書籍テーブルからデータを取得します。\r\n- `ORDER BY publication_date`: 出版日順に並べ替えます。\r\n" },
-
-                        new Lesson{ Category = "基本的な検索",
-                                    Title =  "ASC・DESC / LIMIT",
-                                    Description = "このページでは、並べ替えの順序を指定するASC・DESCと、取得するデータ数を制限するLIMITについて学びます。\r\n### ASC・DESCについて\r\nASCは昇順、DESCは降順を表します。ORDER BY句と共に使用し、並べ替えの順序を指定します。\r\n- ASC（昇順）：値が小さいものから大きいもの、またはアルファベット順に並べます。これはデフォルトの並べ替え方法です。\r\n- DESC（降順）：値が大きいものから小さいもの、または逆アルファベット順に並べます。\r\n\r\n構文\r\n```\r\nSELECT カラム FROM テーブル名 ORDER BY カラム ASC;\r\n```\r\n上記の式では、`テーブル名`から取得した`カラム`のデータを、`カラム`の値に基づいて昇順に並べ替えます。\r\n\r\n### LIMITについて\r\nLIMITは、取得したデータの行数を制限するために使用します。\r\nクエリ結果から指定された数の行のみを取得することができます。\r\n\r\n構文\r\n```\r\nSELECT カラム FROM テーブル名 LIMIT 10;\r\n```\r\n上記の例では、`テーブル名`内の`カラム`のデータから最初の10行のみを取得します。\r\n",
-                                    Question = "出版日が最も新しい本のタイトルと著者を取得してください。\r\n",
-                                    Hint = "- タイトル、著者、出版日を取得するには `SELECT` を使用します。\r\n- データを並べ替えるには `ORDER BY` を使用します。\r\n- 降順に並べ替えるには `DESC` を使用します。\r\n- 結果を1件に制限するには `LIMIT` を使用します。\r\n",
-                                    Answer = "```\r\nSELECT title, author, publication_date\r\n  FROM books\r\n ORDER BY publication_date DESC\r\n LIMIT 1;\r\n```\r\n",
-                                    Reference = "- `SELECT title, author, publication_date`: タイトル、著者、出版日を取得します。\r\n- `FROM books`: 書籍テーブルからデータを取得します。\r\n- `ORDER BY publication_date DESC`: 出版日を降順に並べ替えます。\r\n- `LIMIT 1`: 結果セットを1件に制限します。\r\n" }
+                                    Title =  "ORDER BY句 / ASC・DESC",
+                                    Description = "このページでは、取得したデータを特定の条件で並べ替えるためのORDER BY句と、並べ替えの順序を指定するASC・DESCについて学びます。\r\n### ORDER BY句について\r\nORDER BY句は、SELECT文で取得したデータを、指定したカラムの値に基づいて並べ替えるために使用します。\r\n\r\n構文\r\n```\r\nSELECT カラム FROM テーブル名 ORDER BY カラム;\r\n```\r\n上記の例では、`テーブル名`から取得した`カラム`のデータを、`カラム`の値に基づいて昇順に並べ替えます。\r\n\r\n### ASC・DESCについて\r\nASCは昇順、DESCは降順を表します。ORDER BY句と共に使用し、並べ替えの順序を指定します。\r\n- ASC（昇順）：値が小さいものから大きいもの、またはアルファベット順に並べます。これはデフォルトの並べ替え方法です。\r\n- DESC（降順）：値が大きいものから小さいもの、または逆アルファベット順に並べます。\r\n\r\n構文\r\n```\r\nSELECT カラム FROM テーブル名 ORDER BY カラム ASC;\r\n```\r\n上記の式では、`テーブル名`から取得した`カラム`のデータを、`カラム`の値に基づいて昇順に並べ替えます。\r\n",
+                                    Question = "タイトル、著者、出版日の一覧を出版日が新しい順（降順）に並べてください。\r\n",
+                                    Hint = "- タイトル、著者、出版日を取得するには `SELECT` を使用します。\r\n- データを並べ替えるには `ORDER BY` を使用します。\r\n- 出版日を新しい順（降順）にするには `DESC` を使用します。",
+                                    Answer = "```\r\nSELECT title, author, publication_date\r\n  FROM books\r\n ORDER BY publication_date DESC;\r\n```\r\n",
+                                    Reference = "- `SELECT title, author, publication_date`: タイトル、著者、出版日を取得します。\r\n- `FROM books`: 書籍テーブルからデータを取得します。\r\n- `ORDER BY publication_date DESC`: 出版日が新しい順（降順）に並べ替えます。\r\n" }
                     };
                     context.Lesson.AddRange(lessons);
                     context.SaveChanges();
