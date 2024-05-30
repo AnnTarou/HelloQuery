@@ -18,30 +18,30 @@
 else
 {
     <!--苦手リストがある場合の苦手一覧リスト-->
-    <ul>
-        @foreach (var item in Model)
-        {
-            <li>
-                <table>
+    @foreach (var item in Model)
+    {
+        <li class="items">
+            <table>
+                <tr>
                     <td><a asp-action="Index" asp-controller="Lessons" asp-route-id="@item.LessonId">@item.Lesson.Title</a></td>
                     <td class="align-right">
                         <a asp-action="Details" asp-route-id="@item.LessonId" class="button btn-outline-primary">詳細</a>
                         <form method="post" asp-action="Delete" asp-controller="UserLessons">
-							<button type="submit" class="button btn-outline-danger" name="id" value=@item.UserLessonId>一覧から削除</button>
-						</form>                       
+                            <button type="submit" class="button btn-outline-danger" name="id" value=@item.UserLessonId>一覧から削除</button>
+                        </form>
                     </td>
-				</table>
-            </li>
-           <hr width="100%">
-        }
-    </ul>    
+                </tr>
+            </table>
+        </li>
+        <hr width="100%">
+    }
 }
     <style>
     h4 {
         opacity: 0.4;
     }
 
-    ul {
+    .items {
         list-style: none;
         display: flex;
         flex-direction: column;
