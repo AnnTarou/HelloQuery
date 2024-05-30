@@ -23,16 +23,15 @@
                             <a class="nav-link text-dark" asp-controller="Users" asp-action="Details">アカウント</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="UserLessons" asp-action="Index">苦手問題一覧</a>
+                            <a class="nav-link text-dark" asp-controller="UserLessons" asp-action="Index">苦手リスト一覧</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Lessons" asp-action="Practice">ランダム練習問題</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item logout">
                             <form asp-controller="Account" asp-action="Logout" method="post">
-                                <button type="submit" class="nav-link text-dark btn-link">ログアウト</button>
+                                <button type="submit" class="nav-link text-white btn--orange">ログアウト</button>
                             </form>
-
                         </li>
 					</ul>
                 </div>
@@ -47,7 +46,7 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div class="foot">
             &copy; 2024 - HelloQuery - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
@@ -75,6 +74,21 @@
         padding:0 0 0 60px;
     }
 
+    /*ログアウトボタン*/
+    .logout{
+        position:sticky;
+		left: calc(100% - 50px);
+    }
+
+    .btn--orange {
+        background-color: #1f1a4d;
+        border: #1f1a4d;
+    }
+
+    .btn--orange:hover{
+        background-color: #675e85;
+    }
+
     .nav-link {
         font-size: 20px;
     }
@@ -98,8 +112,14 @@
 
     footer {
         background-color: black;
-        position: fixed;
+        position:fixed;
         width: 100%;
         bottom: 0;
+        height:35px;
     }
+
+    .foot{
+        line-height:3.0;
+    }
+
 </style>
