@@ -11,25 +11,6 @@
             <div id="partialview-section">
                 <p> @await Html.PartialAsync("_LessonsPartial")</p>
             </div>
-
-            <br />
-
-            <!--回答入力欄-->
-            <!-- 回答するボタンのフォーム -->
-            <form method="post" asp-controller="Lessons" asp-action="Answer">
-                <div>
-                    <textarea name="answer" placeholder="回答を入力してください&#10;(例) SELECT * FROM books" rows="3" style="width: 100%;"></textarea>
-                    <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
-                </div>
-                <div class="button-group">
-                    <input type="submit" value="回答する" class="answer-button">
-            </form>
-                    <form method="post" asp-controller="Lessons" asp-action="GiveUp">
-                        <input type="hidden" id="selected-lesson-id" name="lessonId" value=@Model.SelectedLesson.LessonId />
-                        <input type="submit" value="あきらめる" class="giveup-button">
-                    </form>
-                </div>
-            
         </div>
 
         <!--問題一覧-->
@@ -46,7 +27,6 @@
             </div>
         </aside>
     </div>
-
 </body>
 
 <!--JSファイルの呼び出し-->
@@ -76,32 +56,5 @@
         position: sticky;
         top: 0;
         height: 100vh;
-    }
-
-    input[type="text"], textarea {
-        width: 70%;
-        box-sizing: border-box;
-        padding: 10px;
-        margin-bottom: 20px;
-        font-family: inherit;
-    }
-
-    .button-container {
-        width: 100%;
-    }
-
-    .button-group {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .answer-button.giveup-button {
-        width: 40%;
-    }
-
-    .giveup-button{
-        width: 100%;
     }
 </style>
