@@ -109,6 +109,8 @@ namespace HelloQuery.Controllers
             // 整形後の文字列を出力ウィンドウに表示 ※※※確認用※※※
             Debug.WriteLine("Formatted SQL query:");
             Debug.WriteLine(lessonAnswer);
+            Debug.WriteLine("User Formatted SQL query:");
+            Debug.WriteLine(answer);
 
             // ユーザーの入力内容と整形後のSQL文から改行文字を取り除く
             string userAnswer = Regex.Replace(answer, @"\s+", " ");
