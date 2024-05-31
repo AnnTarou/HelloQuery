@@ -197,6 +197,13 @@ namespace HelloQuery.Controllers
             if (dt1.Rows.Count != dt2.Rows.Count || dt1.Columns.Count != dt2.Columns.Count)
                 return false;
 
+            // カラム名を比較して一致していなければ処理を抜ける
+            for (int i = 0; i < dt1.Columns.Count; i++)
+            {
+                if (dt1.Columns[i].ColumnName != dt2.Columns[i].ColumnName)
+                    return false;
+            }
+
             // 一致している場合は各セルの値を比較
             for (int i = 0; i < dt1.Rows.Count; i++)
             {
