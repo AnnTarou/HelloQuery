@@ -4,51 +4,63 @@
     <div>
         <!--タイトル-->
         <div class="Title-block">
-            <h1>@Model.SelectedLesson.Title</h1>
-        </div>
+            <h1>― @Model.SelectedLesson.Title ―</h1>
+        </div><hr />
         
         <!--説明-->
         <div class="description-block1">
-            @Html.Raw(Model.SelectedLesson.Description)
-        </div>
+            <p>@Html.Raw(Model.SelectedLesson.Description)</p>
+        </div><hr />
     
         <!--問題文-->
         <div class="description-block2">
-            @Html.Raw(@Model.SelectedLesson.Question)
-        </div>
+			<b>＜ 問題 ＞</b> @Html.Raw(@Model.SelectedLesson.Question)
+		</div>
 
         <!--ヒント-->
         <div class="Hint-block">
-            @Html.Raw(@Model.SelectedLesson.Hint)
+			<b>＜ヒント＞</b> @Html.Raw(@Model.SelectedLesson.Hint)
         </div>
     </div>
 
-    <br />
-
-    <!-- 回答するボタンのフォーム -->
+<!-- 解答するボタンのフォーム -->
     <form method="post" asp-controller="Lessons" asp-action="Answer">
-        <textarea name="answer" placeholder="回答を入力してください&#10;(例) SELECT * FROM books" rows="3" style="width: 100%;"></textarea>
+    <textarea name="answer" placeholder="解答を入力してください&#10;(例) SELECT * FROM books" rows="3" style="width: 100%;"></textarea>
         <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
         <div class="button-group">
-            <input type="submit" value="回答する" class="answer-button">
+            <input type="submit" value="解答する" class="btn btn--cubic">
     </form>
     <form method="post" asp-controller="Lessons" asp-action="GiveUp">
         <input type="hidden" id="selected-lesson-id" name="lessonId" value=@Model.SelectedLesson.LessonId />
-        <input type="submit" value="あきらめる" class="giveup-button">
+        <input type="submit" value="あきらめる" class="btn btn--cubic">
+    </div>
     </form>
-        </div>
+
+    <br />
+
 </body>
 
 <style>
     /*タイトルの大きさ*/
     h1{
-        font-size:40px;
-        text-align:center;
+        font-size:44px;
+        text-align:left;
+        transform: skewX(-15deg);
+        line-height: 2.0;
     }
-    /*文字の大きさ*/
+
+    .description-block1, .description-block2, .Hint-block {
+        font-size: 22px;
+    }
+
+    /*文章関連*/
     p{
-        font-size: 16px;
-        line-height: 1.0;
+        font-size: 22px;
+        line-height: 1.7;
+    }
+
+    b{
+        font-size: 25px;
     }
 
     .Title-block {
@@ -61,8 +73,7 @@
         position: relative;
         align-items: center;
         letter-spacing: 0;
-        line-height: 1.0;
-        border: 2px solid #000000;
+        line-height: 1.5;
     }
 
     .box.description-block1 code {
@@ -76,26 +87,24 @@
     .description-block2 {
         position: relative;
         align-items: center;
-        line-height: 1.0;
+        line-height: 1.4;
     }
 
     .Hint-block {
-        line-height: 1.0;
+        line-height: 1.5;
         position: relative;
     }
 
+    /* 解答box */
     input[type="text"], textarea {
         width: 70%;
         box-sizing: border-box;
         padding: 10px;
         margin-bottom: 20px;
-        font-family: inherit;
+        font-family: MS ゴシック;
     }
 
-    .button-container {
-        width: 100%;
-    }
-
+    /*ボタン*/
     .button-group {
         display: flex;
         justify-content: center;
@@ -103,11 +112,9 @@
         gap: 10px;
     }
 
-    .answer-button.giveup-button {
-        width: 40%;
-    }
-
-    .giveup-button {
-        width: 100%;
+    .btn {
+        font-size:22px;
+        width: 13rem;
+        height: 2.7rem;
     }
 </style>

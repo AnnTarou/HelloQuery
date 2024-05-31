@@ -12,14 +12,14 @@
 
 <!--問題一覧バー-->
     <aside class="side">
-        <div class="side-in">
-            <h4>問題一覧</h4>
+        <div class="side-in"><br />
+            <h3 class="text-center">≪問題一覧≫</h3>
 
             <ul id="lesson-title" style="list-style-type: none;">
                 @foreach (var item in Model.AllLessons)
                 {
                     <li>
-                        <a asp-controller="Lessons" asp-action="Index" asp-route-id="@item.LessonId" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.Title)</a>
+                        <a asp-controller="Lessons" asp-action="Index" asp-route-id="@item.LessonId" style="cursor: pointer;">▸@Html.DisplayFor(modelItem => item.Title)</a>
                     </li>
                 }
             </ul>
@@ -36,18 +36,26 @@
     .container {
         position: relative;
     }
+
     .side {
         position: absolute;
-        top: 0;
-        right: 0;
+        top: -25px;
+        right: -110px;
         height: 100%;
     }
 
     .side-in {
-        background-color: #8997b8;
-        position: sticky;
-        top: 0;
-        height: 100vh;
+        background-color: #000033;
+        color: #fafad2;
+        position: absolute;
+        top: 10px;
+        right: 1px;
+        width: 265px;
+    }
+
+    li {
+        font-size: 22px;
+        line-height: 3.0;
     }
 </style>
 
