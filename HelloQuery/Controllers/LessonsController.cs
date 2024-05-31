@@ -4,6 +4,10 @@ using HelloQuery.Method;
 using HelloQuery.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace HelloQuery.Controllers
 {
@@ -80,9 +84,6 @@ namespace HelloQuery.Controllers
         [HttpPost]
         public async Task<IActionResult> Answer(string answer, int lessonId)
         {
-            // 入力された文字列を大文字に変換する変数
-            string conversionAnswer;
-
             // idをもとにLessonを取得
             var lesson = await _context.Lesson
                 .FirstOrDefaultAsync(m => m.LessonId == lessonId);
@@ -94,24 +95,125 @@ namespace HelloQuery.Controllers
             }
 
             // 文字が入力されていなかったらIndexにリダイレクト
-            if (answer == null || answer == "")
+            if (string.IsNullOrWhiteSpace(answer))
             {
                 return RedirectToAction("Index", new { id = lessonId });
-            }
-            else
-            {
-                // 入力された文字列を大文字に変換
-                conversionAnswer = answer.ToUpper();
             }
 
-            if (conversionAnswer == lesson.Answer.ToUpper())
+            // 正規表現パターンを定義
+            string pattern = @"```\s*\r?\n([\s\S]*?)\r?\n```";
+
+            // 正規表現を使ってAnswerカラムからSQL文を抽出
+            string lessonAnswer = Regex.Match(lesson.Answer, pattern).Groups[1].Value;
+
+            // ユーザーの入力クエリにシングルクォートがある場合はNプレフィックスを追加
+            string userAnswer = AddUnicodePrefixToLiterals(answer);
+
+            // 整形後の文字列を出力ウィンドウに表示 ※※※確認用※※※
+            Debug.WriteLine("Formatted SQL query:");
+            Debug.WriteLine(lessonAnswer);
+            Debug.WriteLine("User Formatted SQL query:");
+            Debug.WriteLine(userAnswer);
+
+            // ユーザーの入力内容と整形後のSQL文から改行文字を取り除く
+            string formattedUserAnswer = Regex.Replace(userAnswer, @"\s+", " ");
+            string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
+
+            try
             {
-                return RedirectToAction("AnswerPage", new { id = lessonId });
+                // 改行を取り除いた文字列を使ってデータを取得し、DataTableに格納
+                DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
+                DataTable userDataTable = await GetDataTableAsync(formattedUserAnswer);
+
+                // DataTableの内容を比較
+                bool isCorrect = CompareDataTables(lessonDataTable, userDataTable);
+
+                // 比較結果が正解の場合はAnswerページへ遷移、不正解の場合は同じページに留まる
+                if (isCorrect)
+                {
+                    return RedirectToAction("AnswerPage", new { id = lessonId });
+                }
+                else
+                {
+                    return RedirectToAction("Index", new { id = lessonId });
+                }
             }
-            else
+            catch (SqlException ex)
             {
+                // SQL文として成立しない場合はIndexにリダイレクト
                 return RedirectToAction("Index", new { id = lessonId });
             }
+        }
+
+        // Nプレフィックス追加するメソッド
+        private string AddUnicodePrefixToLiterals(string query)
+        {
+            // 正規表現パターン: '...' で囲まれた文字列リテラルを見つける
+            string pattern = @"'([^']*)'";
+            // 置換パターン: N'...' として置換
+            string replacement = "N'$1'";
+
+            // 正規表現で置換
+            string result = Regex.Replace(query, pattern, replacement);
+            return result;
+        }
+
+        // Answerカラムとユーザーが入力したSQL文をそれぞれ実行し、結果をDataTableに格納
+        private async Task<DataTable> GetDataTableAsync(string sql)
+        {
+            // データベースに接続（usingにすることでリソースを自動的に開放）
+            using (var connection = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=aspnet-53bc9b9d-9d6a-45d4-8429-2a2761773502;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;"))
+            {
+                // 非同期的にデータベース接続をオープン
+                await connection.OpenAsync();
+                // 指定されたSQLクエリを実行
+                using (var command = new SqlCommand(sql, connection))
+                {
+                    // SQLクエリの結果をDataTableに格納
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        var dataTable = new DataTable();
+                        // データベースから取得したデータをDataTableに読み込む
+                        adapter.Fill(dataTable);
+
+                        // DataTableの内容を出力ウィンドウに表示 ※※※確認用※※※
+                        Debug.WriteLine("DataTable Contents:");
+                        foreach (DataRow row in dataTable.Rows)
+                        {
+                            var fields = row.ItemArray.Select(field => field.ToString());
+                            Debug.WriteLine(string.Join(", ", fields));
+                        }
+
+                        return dataTable;
+                    }
+                }
+            }
+        }
+
+        // 2つのDataTableの内容を比較し、一致していればtrueを返す
+        private bool CompareDataTables(DataTable dt1, DataTable dt2)
+        {
+            // 両方のDataTableの行数と列数が一致していなければ処理を抜ける
+            if (dt1.Rows.Count != dt2.Rows.Count || dt1.Columns.Count != dt2.Columns.Count)
+                return false;
+
+            // カラム名を比較して一致していなければ処理を抜ける
+            for (int i = 0; i < dt1.Columns.Count; i++)
+            {
+                if (dt1.Columns[i].ColumnName != dt2.Columns[i].ColumnName)
+                    return false;
+            }
+
+            // 一致している場合は各セルの値を比較
+            for (int i = 0; i < dt1.Rows.Count; i++)
+            {
+                for (int j = 0; j < dt1.Columns.Count; j++)
+                {
+                    if (!Equals(dt1.Rows[i][j], dt2.Rows[i][j]))
+                        return false;
+                }
+            }
+            return true;
         }
 
         // あきらめるがクリックされたとき: Lessons/Index
