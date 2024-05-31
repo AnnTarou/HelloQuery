@@ -11,29 +11,6 @@ namespace HelloQuery.Data
                 serviceProvider.GetRequiredService<
                     DbContextOptions<HelloQueryContext>>()))
             {
-                // ※※※このブロックは、本番環境で削除します※※※
-                // Userテーブルのシード追加 ※データベースにレコードがある場合、シード初期化子が返されレコードが追加されない
-                if (!context.User.Any())
-                {
-                    var users = new User[]
-                    {
-                        new User{ UserName = "アンタロウ",
-                                  Email =  "Ann@gmail.com",
-                                  Password = "AnnAnn0000" },
-
-                        new User{ UserName = "オザタロウ",
-                                  Email =  "zaki@gmail.com",
-                                  Password = "zakizaki0000" },
-
-                        new User{ UserName = "コベタロウ",
-                                  Email =  "kobe@gmail.com",
-                                  Password = "kobekobe0000" }
-                    };
-                    context.User.AddRange(users);
-                    context.SaveChanges();
-                }
-                // ※※※ここまで※※※
-
                 // Booksテーブルのシード追加 ※データベースにレコードがある場合、シード初期化子が返されレコードが追加されない
                 if (!context.Book.Any())
                 {
