@@ -121,7 +121,7 @@ namespace HelloQuery.Data
                                     Description = "このページでは、データを絞り込むためのWHERE句と、カラムやテーブルに別名を付けるためのASについて学びます。\r\n### WHERE句について\r\nWHERE句は、SELECT文などで取得するデータから、特定の条件に一致する行を選択するために使用します。\r\n具体的な条件を指定することで、取得したいデータを絞り込むことができます。\r\n\r\n構文\r\n```\r\nSELECT カラム FROM テーブル名 WHERE 条件式;\r\n```\r\n上記の例では、`テーブル名`から`条件式`を満たす`カラム`のデータを取得します。\r\n例えば、`WHERE price > 100`のようにして、価格が100より大きい商品を取得します。\r\n\r\n### ASについて\r\nASは、SQLクエリ内でカラムやテーブルに一時的な別名を付けるために使用します。\r\nこの別名を使用することで、取得したデータの列に対して分かりやすい名前を付けることができます。\r\n\r\n構文\r\n```\r\nSELECT カラム AS 別名 FROM テーブル名;\r\n```\r\n上記の例では、`カラム`に`別名`を付けて、取得されたデータを表現します。\r\n",
                                     Question = "著者が「夏目漱石」の作品のタイトルと出版日を取得してください。\r\n※出力する項目名は「タイトル」と「出版日」\r\n",
                                     Hint = "- タイトルと出版日を取得するには `SELECT` を使用します。\r\n- 別名を付けるには `AS` を使用します。\r\n- 著者を指定するには、 `WHERE` を使用します。\r\n",
-                                    Answer = "```\r\nSELECT title AS \"タイトル\", publication_date AS \"出版日\"\r\n  FROM books\r\n WHERE author = '夏目漱石';\r\n```\r\n",
+                                    Answer = "```\r\nSELECT title AS \"タイトル\", publication_date AS \"出版日\"\r\n  FROM books\r\n WHERE author = N'夏目漱石';\r\n```\r\n",
                                     Reference = "- `SELECT title AS \"タイトル\", publication_date AS \"出版日\"`: タイトルと出版日を取得し、それぞれに「タイトル」と「出版日」という別名を付けます。\r\n- `FROM books`: 書籍テーブルからデータを取得します。\r\n- `WHERE author = '夏目漱石'`: 著者が「夏目漱石」の作品を指定します。\r\n" },
 
                         new Lesson{ Category = "基本的な検索",

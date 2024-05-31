@@ -106,21 +106,24 @@ namespace HelloQuery.Controllers
             // 正規表現を使ってAnswerカラムからSQL文を抽出
             string lessonAnswer = Regex.Match(lesson.Answer, pattern).Groups[1].Value;
 
+            // ユーザーの入力クエリにシングルクォートがある場合はNプレフィックスを追加
+            string userAnswer = AddUnicodePrefixToLiterals(answer);
+
             // 整形後の文字列を出力ウィンドウに表示 ※※※確認用※※※
             Debug.WriteLine("Formatted SQL query:");
             Debug.WriteLine(lessonAnswer);
             Debug.WriteLine("User Formatted SQL query:");
-            Debug.WriteLine(answer);
+            Debug.WriteLine(userAnswer);
 
             // ユーザーの入力内容と整形後のSQL文から改行文字を取り除く
-            string userAnswer = Regex.Replace(answer, @"\s+", " ");
+            string formattedUserAnswer = Regex.Replace(userAnswer, @"\s+", " ");
             string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
 
             try
             {
                 // 改行を取り除いた文字列を使ってデータを取得し、DataTableに格納
                 DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
-                DataTable userDataTable = await GetDataTableAsync(userAnswer);
+                DataTable userDataTable = await GetDataTableAsync(formattedUserAnswer);
 
                 // DataTableの内容を比較
                 bool isCorrect = CompareDataTables(lessonDataTable, userDataTable);
@@ -140,7 +143,19 @@ namespace HelloQuery.Controllers
                 // SQL文として成立しない場合はIndexにリダイレクト
                 return RedirectToAction("Index", new { id = lessonId });
             }
+        }
 
+        // Nプレフィックス追加するメソッド
+        private string AddUnicodePrefixToLiterals(string query)
+        {
+            // 正規表現パターン: '...' で囲まれた文字列リテラルを見つける
+            string pattern = @"'([^']*)'";
+            // 置換パターン: N'...' として置換
+            string replacement = "N'$1'";
+
+            // 正規表現で置換
+            string result = Regex.Replace(query, pattern, replacement);
+            return result;
         }
 
         // Answerカラムとユーザーが入力したSQL文をそれぞれ実行し、結果をDataTableに格納
