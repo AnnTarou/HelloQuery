@@ -19,9 +19,24 @@
 
         <!--ヒント-->
         <div class="Hint-block">
-			<b>＜ヒント＞</b> @Html.Raw(@Model.SelectedLesson.Hint)
+            <b>＜ヒント＞</b>
+            <button class="hint1" onclick="document.getElementById('hint').style.display = 'inline';">
+                👀
+                <div class="description1">ヒントを表示します</div>
+            </button>
+
+
+            <button class="hint2" onclick="document.getElementById('hint').style.display = 'none';">
+                🙈
+                <div class="description2">ヒントを隠します</div>
+            </button>
+
+            <div id="hint">@Html.Raw(@Model.SelectedLesson.Hint)</div>
         </div>
+
     </div>
+
+    <br />
 
 <!-- 解答するボタンのフォーム -->
     <form method="post" asp-controller="Lessons" asp-action="Answer">
@@ -69,39 +84,79 @@
         align-items: center;
     }
 
-    .description-block1 {
-        position: relative;
-        align-items: center;
-        letter-spacing: 0;
-        line-height: 1.5;
-    }
-
-    .box.description-block1 code {
-        font-family: 'Courier New', Courier, monospace;
-        background-color: #f8f8f8;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 2px 4px;
-    }
-
-    .description-block2 {
-        position: relative;
-        align-items: center;
-        line-height: 1.4;
-    }
-
+    /*ヒント*/
     .Hint-block {
         line-height: 1.5;
         position: relative;
     }
 
+    #hint {
+        display: none;
+    }
+
+    input {
+        font-size: 23px;
+        background-color: #fff3b8;
+        color: darkblue;
+        border: none;
+        font-weight: bold;
+    }
+    /*ツールチップ*/
+    .hint1 {
+        position: relative;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+        .hint1 button {
+            margin: 0;
+            padding: 0;
+        }
+
+    .description1, .description2 {
+        display: none;
+        position: absolute;
+        padding: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1.6em;
+        color: #e4007f;
+        border-radius: 5px;
+        background: white;
+        width: 170px;
+        font-family: monospace;
+    }
+
+        .description1:before, .description2:before {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            border: 15px solid transparent;
+            border-top: 15px solid white;
+            margin-left: -15px;
+        }
+
+    .hint1:hover .description1 {
+        display: inline-block;
+        top: -60px;
+        left: -65px;
+    }
+
+    .hint2:hover .description2 {
+        display: inline-block;
+        top: -60px;
+        left: 120px;
+    }
     /* 解答box */
     input[type="text"], textarea {
         width: 70%;
         box-sizing: border-box;
         padding: 10px;
         margin-bottom: 20px;
-        font-family: MS ゴシック;
+        font-size: 20px;
+        font-family: Ricty Diminished;
+        letter-spacing: 1.7px;
     }
 
     /*ボタン*/
