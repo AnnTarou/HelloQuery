@@ -28,6 +28,6 @@
         // ナビゲーションプロパティ
         public List<UserLesson> UserLesson { get; set; }
 
-        public virtual ICollection<Answer> Answers { get; set; }
+        public virtual ICollection<LessonAnswer> LessonAnswer { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelloQuery.Migrations
 {
     [DbContext(typeof(HelloQueryContext))]
-    [Migration("20240603001806_InitialAddAnswerTable")]
-    partial class InitialAddAnswerTable
+    [Migration("20240603054711_InitialAddLessonAnswerTable")]
+    partial class InitialAddLessonAnswerTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,28 +24,6 @@ namespace HelloQuery.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("HelloQuery.Models.Answer", b =>
-                {
-                    b.Property<int>("AnswerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnswerId"));
-
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ValidAnswers")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("AnswerId");
-
-                    b.HasIndex("LessonId");
-
-                    b.ToTable("Answer");
-                });
 
             modelBuilder.Entity("HelloQuery.Models.Book", b =>
                 {
@@ -124,6 +102,28 @@ namespace HelloQuery.Migrations
                     b.ToTable("Lesson");
                 });
 
+            modelBuilder.Entity("HelloQuery.Models.LessonAnswer", b =>
+                {
+                    b.Property<int>("LessonAnswerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LessonAnswerId"));
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ValidAnswer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LessonAnswerId");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("LessonAnswer");
+                });
+
             modelBuilder.Entity("HelloQuery.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -172,10 +172,10 @@ namespace HelloQuery.Migrations
                     b.ToTable("UserLesson");
                 });
 
-            modelBuilder.Entity("HelloQuery.Models.Answer", b =>
+            modelBuilder.Entity("HelloQuery.Models.LessonAnswer", b =>
                 {
                     b.HasOne("HelloQuery.Models.Lesson", "Lesson")
-                        .WithMany("Answers")
+                        .WithMany("LessonAnswer")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -204,7 +204,7 @@ namespace HelloQuery.Migrations
 
             modelBuilder.Entity("HelloQuery.Models.Lesson", b =>
                 {
-                    b.Navigation("Answers");
+                    b.Navigation("LessonAnswer");
 
                     b.Navigation("UserLesson");
                 });

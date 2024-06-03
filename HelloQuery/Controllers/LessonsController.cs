@@ -85,9 +85,9 @@ namespace HelloQuery.Controllers
         public async Task<IActionResult> Answer(string answer, int lessonId)
         {
             // LessonIdをもとに解答リストを取得
-            var validAnswers = _context.Answer
+            var validAnswers = _context.LessonAnswer
                                        .Where(a => a.LessonId == lessonId)
-                                       .Select(a => a.ValidAnswers)
+                                       .Select(a => a.ValidAnswer)
                                        .ToList();
 
             // 文字が入力されていなかったらIndexにリダイレクト

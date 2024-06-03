@@ -121,27 +121,27 @@ namespace HelloQuery.Data
                     context.SaveChanges();
                 }
 
-                // Answerテーブルのシード追加
-                if (!context.Answer.Any())
+                // LessonAnswerテーブルのシード追加
+                if (!context.LessonAnswer.Any())
                 {
-                    var answers = new Answer[]
+                    var lessonAnswers = new LessonAnswer[]
                     {
-                        new Answer{ LessonId = 1,
-                                    ValidAnswers = "SELECT title, author FROM books;" },
+                        new LessonAnswer{ LessonId = 1,
+                                    ValidAnswer = "SELECT title, author FROM books;" },
 
-                        new Answer{ LessonId = 2,
-                                    ValidAnswers = "SELECT title AS \"タイトル\", publication_date AS \"出版日\" FROM books WHERE author = N'夏目漱石';" },
+                        new LessonAnswer{ LessonId = 2,
+                                    ValidAnswer = "SELECT title AS \"タイトル\", publication_date AS \"出版日\" FROM books WHERE author = N'夏目漱石';" },
 
-                        new Answer{ LessonId = 2,
-                                    ValidAnswers = "SELECT title \"タイトル\", publication_date \"出版日\" FROM books WHERE author = N'夏目漱石';" },
+                        new LessonAnswer{ LessonId = 2,
+                                    ValidAnswer = "SELECT title \"タイトル\", publication_date \"出版日\" FROM books WHERE author = N'夏目漱石';" },
 
-                        new Answer{ LessonId = 3,
-                                    ValidAnswers = "SELECT DISTINCT author FROM books;" },
+                        new LessonAnswer{ LessonId = 3,
+                                    ValidAnswer = "SELECT DISTINCT author FROM books;" },
 
-                        new Answer{ LessonId = 4,
-                                    ValidAnswers = "SELECT title, author, publication_date FROM books ORDER BY publication_date DESC;" },
+                        new LessonAnswer{ LessonId = 4,
+                                    ValidAnswer = "SELECT title, author, publication_date FROM books ORDER BY publication_date DESC;" },
                     };
-                    context.Answer.AddRange(answers);
+                    context.LessonAnswer.AddRange(lessonAnswers);
                     context.SaveChanges();
                 }
             }
