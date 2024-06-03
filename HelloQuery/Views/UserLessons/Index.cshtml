@@ -24,6 +24,8 @@ else
             <table>
                 <tr>
                     <td><a asp-action="Index" asp-controller="Lessons" asp-route-id="@item.LessonId">▸@item.Lesson.Title</a></td>
+                </tr>
+                <tr>
                     <td class="button">
                         <a asp-action="Details" asp-route-id="@item.LessonId" class="btn btn--cubic1">詳細</a>
                         <form method="post" asp-action="Delete" asp-controller="UserLessons">
@@ -44,6 +46,7 @@ else
     h3 {
         opacity: 0.4;
         line-height:7.5;
+        font-size: 35px;
     }
 
     .items {
@@ -64,6 +67,6 @@ else
 
     .button{
         position:relative;
-        left:calc(100% - 330px);
+        left: 59vw;
     }
 </style>
