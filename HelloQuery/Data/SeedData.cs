@@ -120,6 +120,30 @@ namespace HelloQuery.Data
                     context.Lesson.AddRange(lessons);
                     context.SaveChanges();
                 }
+
+                // LessonAnswerテーブルのシード追加
+                if (!context.LessonAnswer.Any())
+                {
+                    var lessonAnswers = new LessonAnswer[]
+                    {
+                        new LessonAnswer{ LessonId = 1,
+                                    ValidAnswer = "SELECT title, author FROM books;" },
+
+                        new LessonAnswer{ LessonId = 2,
+                                    ValidAnswer = "SELECT title AS \"タイトル\", publication_date AS \"出版日\" FROM books WHERE author = N'夏目漱石';" },
+
+                        new LessonAnswer{ LessonId = 2,
+                                    ValidAnswer = "SELECT title \"タイトル\", publication_date \"出版日\" FROM books WHERE author = N'夏目漱石';" },
+
+                        new LessonAnswer{ LessonId = 3,
+                                    ValidAnswer = "SELECT DISTINCT author FROM books;" },
+
+                        new LessonAnswer{ LessonId = 4,
+                                    ValidAnswer = "SELECT title, author, publication_date FROM books ORDER BY publication_date DESC;" },
+                    };
+                    context.LessonAnswer.AddRange(lessonAnswers);
+                    context.SaveChanges();
+                }
             }
         }
     }
