@@ -14,5 +14,6 @@ namespace HelloQuery.Data
         public DbSet<HelloQuery.Models.User> User { get; set; } = default!;
         public DbSet<HelloQuery.Models.UserLesson> UserLesson { get; set; } = default!;
         public DbSet<HelloQuery.Models.Book> Book { get; set; } = default!;
+        public DbSet<HelloQuery.Models.Answer> Answer { get; set; } = default!;
     }
 }
