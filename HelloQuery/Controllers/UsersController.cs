@@ -228,6 +228,12 @@ namespace HelloQuery.Controllers
 
             await _context.SaveChangesAsync();
 
+            // セッションをクリア
+            HttpContext.Session.Clear();
+
+            // クッキーを削除
+            Response.Cookies.Delete("SessionId");
+
             return RedirectToAction("Index","Home");
         }
 

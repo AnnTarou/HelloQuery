@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "エラー";
+}
+
+<!--エラーコードとメッセージ表示-->
+<h1 style="text-align: center">エラーが発生しました</h1>
+
+<br />
+
+<h3 style="text-align: center">エラーコード @TempData["Message"]</h3>
+
+<div class="text-center">
+    <a href="@Url.Action("Index", "Home")" class="btn btn--cubic">ホームに戻る</a>
+</div>

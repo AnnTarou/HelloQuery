@@ -3,7 +3,6 @@ using HelloQuery.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using Newtonsoft.Json;
 
 namespace HelloQuery.Controllers
@@ -90,7 +89,8 @@ namespace HelloQuery.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound();
+                TempData["Message"] = "E-001:" + ex.Message;
+                return RedirectToAction("error", "Error");
             }
         }
 
