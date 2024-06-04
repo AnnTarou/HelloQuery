@@ -132,8 +132,8 @@ namespace HelloQuery.Controllers
                     // LINQを使用してSQL文を実行し、結果をDataTableに格納
                     DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
 
-                    // AnswerPageにDataTableを渡す
-                    return RedirectToAction("AnswerPage", new { id = lessonId, dataTable = lessonDataTable });
+                    // AnswerPageにidを渡す
+                    return RedirectToAction("AnswerPage", new { id = lessonId });
                 }
                 else
                 {
