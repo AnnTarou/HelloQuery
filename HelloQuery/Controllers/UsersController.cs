@@ -57,30 +57,37 @@ namespace HelloQuery.Controllers
                 return View(user);
             }
 
-            // ModelState.IsValidがfalseのときにあえて設定している
-            if (!ModelState.IsValid)
+            try
             {
-                // パスワードハッシュ化クラスのインスタンス生成
-                var hasher = new PasswordHasher<IdentityUser>();
+                if (!ModelState.IsValid)
+                {
+                    // パスワードハッシュ化クラスのインスタンス生成
+                    var hasher = new PasswordHasher<IdentityUser>();
 
-                // ハッシュ化されたパスワードの生成
-                var hashedPassword = hasher.HashPassword(null, user.Password);
+                    // ハッシュ化されたパスワードの生成
+                    var hashedPassword = hasher.HashPassword(null, user.Password);
 
-                // ハッシュ化されたパスワードをパスワードに設定
-                user.Password = hashedPassword;
+                    // ハッシュ化されたパスワードをパスワードに設定
+                    user.Password = hashedPassword;
 
-                // コンテキストに入力されたuserを登録
-                _context.Add(user);
+                    // コンテキストに入力されたuserを登録
+                    _context.Add(user);
 
-                // データベースの更新
-                await _context.SaveChangesAsync();
+                    // データベースの更新
+                    await _context.SaveChangesAsync();
 
-                // DB更新成功したらログインページへリダイレクト
-                return RedirectToAction("Login", "Account");
+                    // DB更新成功したらログインページへリダイレクト
+                    return RedirectToAction("Login", "Account");
+                }
+                else
+                {
+                    return View(user);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return View(user);
+                TempData["Message"] = "E-010:" + ex.Message;
+                return RedirectToAction("error", "Error");
             }
         }
 
@@ -89,21 +96,32 @@ namespace HelloQuery.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            // Useridがnullのとき、NotFoundを返す
+            // Useridがnullのとき
             if (id == null)
             {
-                return NotFound();
+                TempData["Message"] = "E-011:ユーザーが見つかりません";
+                return RedirectToAction("error", "Error"); 
             }
 
-            var user = await _context.User.FindAsync(id);
-
-            // Userがnullのとき、NotFoundを返す
-            if (user == null)
+            // データベースへ接続
+            try
             {
-                return NotFound();
-            }
+                var user = await _context.User.FindAsync(id);
 
-            return View(user);
+                // データベースからnullが戻ってきたとき
+                if (user == null)
+                {
+                    TempData["Message"] = "E-012:操作をやり直してください";
+                    return RedirectToAction("error", "Error");
+                }
+
+                return View(user);
+            }
+            catch(Exception ex)
+            {
+                TempData["Message"] = "E-013:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }
         }
 
         // Users/EditのPOSTメソッド
@@ -115,9 +133,11 @@ namespace HelloQuery.Controllers
             // セッションからユーザーIDを取得
             var loginUser = (User)HttpContext.Items["User"];
 
+            // ログインユーザーと引数のユーザーが一致しないとき
             if (loginUser.UserId != user.UserId)
             {
-                return NotFound();
+                TempData["Message"] = "E-014:ユーザー情報が一致しません";
+                return RedirectToAction("error", "Error");
             }
 
             // ニックネームが25文字以上のとき、エラー
@@ -160,24 +180,32 @@ namespace HelloQuery.Controllers
 
                     // データベースの更新
                     await _context.SaveChangesAsync();
+
+                    // DB更新成功したらアカウント詳細ページにリダイレクト
+                    return RedirectToAction("Details", "Users");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!UserExists(user.UserId))
                     {
-                        return NotFound();
+                        TempData["Message"] = "E-015:上書き保存に失敗しました";
+                        return RedirectToAction("error", "Error");
                     }
                     else
                     {
                         throw;
                     }
                 }
-
-                // DB更新成功したらアカウント詳細ページにリダイレクト
-                return RedirectToAction("Details", "Users");
+                catch (Exception ex)
+                {
+                    TempData["Message"] = "E-016:" + ex.Message;
+                    return RedirectToAction("error", "Error");
+                }
             }
-
-            return View(user);
+            else
+            {
+                return View(user);
+            }
         }
 
         // Users/DeleteにGETアクセスがあったとき
@@ -187,22 +215,25 @@ namespace HelloQuery.Controllers
             // セッションからユーザーIDを取得
             var loginUser = (User)HttpContext.Items["User"];
 
-            // idがnullのとき、NotFoundを返す
-            if (loginUser == null)
+            try
             {
-                return NotFound();
+                var user = await _context.User
+               .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId);
+
+                // userがnullのとき
+                if (user == null)
+                {
+                    TempData["Message"] = "E-017:ユーザーが見つかりませんでした。";
+                    return RedirectToAction("error", "Error");
+                }
+
+                return View(user);
             }
-
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId);
-
-            // Userがnullのとき、NotFoundを返す
-            if (user == null)
+            catch (Exception ex)
             {
-                return NotFound();
-            }
-
-            return View(user);
+                TempData["Message"] = "E-018:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }   
         }
 
         // Users/Delete:POSTメソッド
@@ -211,30 +242,43 @@ namespace HelloQuery.Controllers
         [SessionCheckFilter]
         public async Task<IActionResult> Delete(int id)
         {
-            // Includeメソッドを使用してこのユーザーに関連するUserLessonを取得
-            var user = await _context.User
-                .Include(u => u.UserLesson)
-                .FirstOrDefaultAsync(u => u.UserId == id);
-
-            // Userがnullでないとき
-            if (user != null)
+            try
             {
-                // このユーザーのUserLessonを削除
-                _context.UserLesson.RemoveRange(user.UserLesson);
+                // Includeメソッドを使用してこのユーザーに関連するUserLessonを取得
+                var user = await _context.User
+                    .Include(u => u.UserLesson)
+                    .FirstOrDefaultAsync(u => u.UserId == id);
 
-                // このユーザーをUserから削除
-                _context.User.Remove(user);
+                // Userがnullでないとき
+                if (user != null)
+                {
+                    // このユーザーのUserLessonを削除
+                    _context.UserLesson.RemoveRange(user.UserLesson);
+
+                    // このユーザーをUserから削除
+                    _context.User.Remove(user);
+
+                    await _context.SaveChangesAsync();
+
+                    // セッションをクリア
+                    HttpContext.Session.Clear();
+
+                    // クッキーを削除
+                    Response.Cookies.Delete("SessionId");
+
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    TempData["Message"] = "E-019:情報が見つかりませんでした";
+                    return RedirectToAction("error", "Error");
+                }
             }
-
-            await _context.SaveChangesAsync();
-
-            // セッションをクリア
-            HttpContext.Session.Clear();
-
-            // クッキーを削除
-            Response.Cookies.Delete("SessionId");
-
-            return RedirectToAction("Index","Home");
+            catch (Exception ex)
+            {
+                TempData["Message"] = "E-020:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }
         }
 
         // Users/DetailsにGETアクセスがあったとき
@@ -245,20 +289,24 @@ namespace HelloQuery.Controllers
             // セッションからユーザーIDを取得
             var loginUser = (User)HttpContext.Items["User"];
 
-            if (loginUser == null)
+            try
             {
-                return NotFound();
+                var user = await _context.User
+               .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId);
+
+                if (user == null)
+                {
+                    TempData["Message"] = "E-021:ログインをもう一度やり直してください";
+                    return RedirectToAction("error", "Error");
+                }
+
+                return View(user);
             }
-
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId);
-
-            if (user == null)
+            catch (Exception ex)
             {
-                return NotFound();
-            }
-
-            return View(user);
+                TempData["Message"] = "E-022:ログインをもう一度やり直してください";
+                return RedirectToAction("error", "Error");
+            }           
         }
 
         private bool UserExists(int id)
