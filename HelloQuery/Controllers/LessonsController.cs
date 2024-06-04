@@ -51,9 +51,13 @@ namespace HelloQuery.Controllers
                 MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
             }
 
-            // ViewModelに選択されたLessonと全Lessonをセット
+            // Booksテーブルのデータを取得
+            var books = await _context.Book.ToListAsync();
+
+            // ViewModelに選択されたLessonと全Lesson、Booksのデータをセット
             viewModel.SelectedLesson = selectedLesson;
             viewModel.AllLessons = lessons;
+            viewModel.Books = books;
 
             return View(viewModel);
         }

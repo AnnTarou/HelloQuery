@@ -7,5 +7,8 @@
 
         // 全Lessonを保持するリスト
         public List<Lesson>? AllLessons { get; set; }
+
+        // Booksテーブルから取得した本のリストを保持
+        public List<Book> Books { get; set; }
     }
 }

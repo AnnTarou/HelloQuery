@@ -17,6 +17,34 @@
 			<b>＜ 問題 ＞</b> @Html.Raw(@Model.SelectedLesson.Question)
 		</div>
 
+        <!--booksテーブル-->
+        <div class="Books-block">
+            <b>＜books テーブル＞</b>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>title</th>
+                        <th>author</th>
+                        <th>publication_date</th>
+                        <th>pages</th>
+                        <th>price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var book in Model.Books)
+                    {
+                        <tr>
+                            <td>@book.Title</td>
+                            <td>@book.Author</td>
+                            <td>@book.PublicationDate.ToString("yyyy-MM-dd")</td>
+                            <td>@book.Pages</td>
+                            <td>@book.Price</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
         <!--ヒント-->
         <div class="Hint-block">
             <b>＜ヒント＞</b>
