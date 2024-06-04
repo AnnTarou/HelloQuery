@@ -47,7 +47,11 @@
 
 					<br />
 
-                    <p><input type="submit" value="削除" class="Pbtn" /></p>
+                    <p>
+                    <form method="post" asp-action="Delete" asp-controller="Users">
+                        <button type="submit" class="Pbtn" name="id" value=@Model?.UserId>削除</button>
+                    </form>
+                    </p>
 				</h4>
 			</div>
 		</div>
