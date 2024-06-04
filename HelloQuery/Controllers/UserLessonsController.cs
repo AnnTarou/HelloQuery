@@ -24,19 +24,22 @@ namespace HelloQuery.Controllers
             // 現在ログインしているユーザーを取得
             User loginUser = (User)HttpContext.Items["User"];
 
-            // ログインしていない場合はNotFoundを返す
-            if (loginUser == null)
+            // データベースへ接続
+            try
             {
-                return NotFound();
+                // ログインしているユーザーのUserLessonを取得
+                var userLessons = await _context.UserLesson
+                    .Include(ul => ul.Lesson)
+                    .Where(ul => ul.UserId == loginUser.UserId)
+                    .ToListAsync();
+
+                return View(userLessons);
             }
-
-            // ログインしているユーザーのUserLessonを取得
-            var userLessons = await _context.UserLesson
-                .Include(ul => ul.Lesson)
-                .Where(ul => ul.UserId == loginUser.UserId)
-                .ToListAsync();
-
-            return View(userLessons);
+            catch (Exception ex)
+            {
+                TempData["Message"] = "E-002:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }
         }
 
         // 「詳細」ボタンがおされたとき　UserLessons/Details：GETアクセスあったとき
@@ -45,32 +48,37 @@ namespace HelloQuery.Controllers
             //LessonIdの引数が入ってこなかった場合エラーページ表示
             if (id == null)
             {
-                return NotFound();
+                TempData["Message"] = "E-003:もう一度ログインしてください";
+                return RedirectToAction("error", "Error");
             }
 
             // ログインしているユーザーを取得
             User loginUser = (User)HttpContext.Items["User"];
 
-            // ログインしていない場合はNotFoundを返す
-            if (loginUser == null)
+            // データベースにアクセス
+            try
             {
-                return NotFound();
+                var lesson = await _context.UserLesson
+               .Include(u => u.Lesson)
+               .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId && m.LessonId == id);
+
+                // lessonがnullとなった場合
+                if (lesson == null)
+                {
+                    TempData["Message"] = "E-004:もう一度ログインしてください";
+                    return RedirectToAction("error", "Error");
+                }
+
+                // マークダウンの内容をHTMLに変換
+                MarkdownConverter.ConvertMarkdownToHtml(lesson.Lesson);
+
+                return View(lesson);
             }
-
-            var lesson = await _context.UserLesson
-                .Include(u => u.Lesson)
-                .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId && m.LessonId == id);
-
-            // ユーザーが直接このアドレスにアクセスした場合はNotFoundを返す
-            if (lesson == null)
+            catch(Exception ex) 
             {
-                return NotFound();
+                TempData["Message"] = "E-005:" + ex.Message;
+                return RedirectToAction("error", "Error");
             }
-
-            // マークダウンの内容をHTMLに変換
-            MarkdownConverter.ConvertMarkdownToHtml(lesson.Lesson);
-
-            return View(lesson);
         }
 
         // 「苦手リストに保存」が押されたとき　/　UserLessons/Create：POSTメソッド
@@ -78,44 +86,48 @@ namespace HelloQuery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int? lessonId)
         {
-            // LessonIdがnullの場合はNotFoundを返す
+            // LessonIdがnullの場合
             if (lessonId == null)
             {
-                return NotFound();
+                TempData["Message"] = "E-006:もう一度ログインしてください:";
+                return RedirectToAction("error", "Error");
             }
 
             // 現在ログインしているユーザーを取得
             User loginUser = (User)HttpContext.Items["User"];
 
-            // ログインユーザーがnullの場合はログイン画面にリダイレクト
-            if (loginUser == null)
+            // データベースに接続
+            try
             {
-                return RedirectToAction("Login", "Account");
+                // 現在のユーザーがすでにlessonIdを持っているかどうかを確認
+                var existingUserLesson = await _context.UserLesson
+                    .FirstOrDefaultAsync(ul => ul.UserId == loginUser.UserId && ul.LessonId == lessonId);
+
+                // 現在のユーザーがすでにlessonIdを持っている場合は何もしない
+                if (existingUserLesson != null)
+                {
+                    return RedirectToAction("AnswerPage", "Lessons", new { id = lessonId });
+                }
+
+                // UserLessonのインスタンスを生成
+                UserLesson userLesson = new UserLesson()
+                {
+                    UserId = loginUser.UserId,
+                    LessonId = (int)lessonId
+                };
+
+                _context.Add(userLesson);
+
+                // データベースの変更を保存
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index", "UserLessons");
             }
-
-            // 現在のユーザーがすでにlessonIdを持っているかどうかを確認
-            var existingUserLesson = await _context.UserLesson
-                .FirstOrDefaultAsync(ul => ul.UserId == loginUser.UserId && ul.LessonId == lessonId);
-
-            // 現在のユーザーがすでにlessonIdを持っている場合は何もしない
-            if (existingUserLesson != null)
+            catch (Exception ex)
             {
-                return RedirectToAction("AnswerPage","Lessons", new {id = lessonId});
-            }
-
-            // UserLessonのインスタンスを生成
-            UserLesson userLesson = new UserLesson()
-            {
-                UserId = loginUser.UserId,
-                LessonId = (int)lessonId
-            };
-
-            _context.Add(userLesson);
-
-            // データベースの変更を保存
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index", "UserLessons");
+                TempData["Message"] = "E-007:"  + ex.Message;
+                return RedirectToAction("error", "Error");
+            }            
         }
 
         // 苦手リストの「削除」ボタンがおされたとき
@@ -123,17 +135,33 @@ namespace HelloQuery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int? id)
         {
-            var userLesson = await _context.UserLesson.FindAsync(id);
-
-            // UserLessonがDBに見つかった場合は削除
-            if (userLesson != null)
+            // idが入ってこなかった場合
+            if (id == null)
             {
-                _context.UserLesson.Remove(userLesson);
+                TempData["Message"] = "E-008:もう一度ログインしてください:";
+                return RedirectToAction("error", "Error");
             }
+            // データベースに接続
+            try
+            {
+                var userLesson = await _context.UserLesson.FindAsync(id);
 
-            await _context.SaveChangesAsync();
+                // UserLessonがDBに見つかった場合は削除
+                if (userLesson != null)
+                {
+                    _context.UserLesson.Remove(userLesson);
+                }
 
-            return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+
+            }
+            catch(Exception ex) 
+            {
+                TempData["Message"] = "E-009:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }
         }
 
         private bool UserLessonExists(int id)
