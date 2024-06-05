@@ -122,7 +122,7 @@ namespace HelloQuery.Data
                                     Description = "このページでは、SQLクエリで幅広く活用されている四則演算と、四捨五入の関数について学びます。\r\n### 算術演算子（四則演算）について\r\n算術演算子である四則演算（加算：`+`,減算：`-`,乗算：`*`,除算：`/`)は、データベース内の数値型の列に対して使用されます。\r\n具体的には、売上データの集計や数量と単価の掛け算など、様々な場面で活用されます。\r\n演算子の優先順位は数学的な概念に従い、括弧で囲まれた部分が最初に計算されます。\r\n\r\n構文\r\n```sql\r\nSELECT カラム1 + カラム2 FROM テーブル名;\r\n```\r\n上記の式では、`カラム1`と`カラム2`の値を足し合わせた結果を返します。\r\n### ROUND関数について\r\nROUNDは、数値を指定された桁数に丸めるための関数です。主に小数点以下の桁数を調整するために使用されますが、整数も丸めることができます。この関数は様々なプログラミング言語やデータベースクエリ言語で利用されており、一般的な数学的な丸め操作を行います。\r\n\r\n構文\r\n```sql\r\nROUND (丸め対象となる数値, 丸めの桁数)\r\n```\r\n例えば、`ROUND(3.14159, 2)`は、3.14159を小数点以下2桁に丸め、3.14を返します。\r\n注意：丸めの基準（5を繰り上げるか、切り捨てるかなど）は使用する言語や型、データベースにより異なる場合があるため、公式のドキュメントを参照してください。",
                                     Question = "タイトル、著者名、本の税抜き価格（10％）を取得してください。\r\n※税抜き価格は整数丸め\r\n※出力する項目名は「タイトル」、「著者」、「税抜き価格」",
                                     Hint = "- タイトルと著者名を取得するには `SELECT` を使用します。\r\n- 項目名を変更するためには `AS` を使用します。\r\n- 税抜き価格を計算するために、価格を 1.1 で割り、`ROUND` を使用して四捨五入します。",
-                                    Answer = "```\r\nSELECT title AS \"タイトル\", author AS \"著者\",\r\n\t\t\t ROUND(price / 1.1, 0) AS \"税抜き価格\"\r\n  FROM books;\r\n```",
+                                    Answer = "```\r\nSELECT title AS \"タイトル\", author AS \"著者\",\r\n       ROUND(price / 1.1, 0) AS \"税抜き価格\"\r\n  FROM books;\r\n```",
                                     Reference = "- `SELECT title AS \"タイトル\", author AS \"著者\",`: タイトルと著者名を取得し、それぞれに「タイトル」、「著者」という別名を付けます。\r\n- `ROUND(price / 1.1, 0) AS \"税抜き価格\"`: 価格を 1.1 で割り、四捨五入して税抜き価格を計算し、それに「税抜き価格」という別名を付けます。\r\n- `FROM books`: 書籍テーブルからデータを取得します。" },
 
                         new Lesson{ Category = "基本的な演算",
@@ -186,7 +186,7 @@ namespace HelloQuery.Data
                                     Description = "このページでは、分類したデータに対して条件を指定するためのHAVING句について学びます。\r\n### HAVING句について\r\nHAVING句は、GROUP BY句で分類したデータに対して、集計関数を使用した条件を指定し、集計結果をフィルタリングするために使用します。WHERE句との違いは、集計関数を条件に使用できる点です。\r\n\r\n構文\r\n```sql\r\nSELECT カラム1, AVG(カラム2) FROM テーブル名 GROUP BY カラム1 HAVING AVG(カラム2) > 10;\r\n```\r\n上記の式では、`テーブル名`から取得した`カラム1`の値ごとにデータをグループ化し、`カラム2`の平均値が10より大きいグループのみを取得します。",
                                     Question = "各著者の合計価格が1500円を超える著者の名前と、その合計価格を取得してください。",
                                     Hint = "- 著者ごとの合計価格が1500円を超える著者を取得するために `HAVING` を使用します。\r\n- 合計価格を取得するために `SUM(price)`を使用します。",
-                                    Answer = "```\r\nSELECT author, SUM(price) AS total_price\r\nFROM books\r\nGROUP BY author\r\nHAVING SUM(price) > 1500;\r\n```",
+                                    Answer = "```\r\nSELECT author, SUM(price) AS total_price\r\n  FROM books\r\n GROUP BY author\r\nHAVING SUM(price) > 1500;\r\n```",
                                     Reference = "- `SUM(price) AS total_price`: 各著者の合計価格を取得します。\r\n- `FROM books`: 書籍テーブルからデータを取得します。\r\n- `GROUP BY author`: 著者ごとにグループ化します。\r\n- `HAVING SUM(price) > 1500`: 合計価格が1500円を超える条件を適用します。" }
                     };
                     context.Lesson.AddRange(lessons);
