@@ -188,20 +188,25 @@ namespace HelloQuery.Controllers
         private async Task<DataTable> GetDataTableAsync(string sql)
         {
             var dataTable = new DataTable();
-
             try
             {
+                // ROUND関数の検出と表示桁数の調整
+                string pattern = @"ROUND\((.+?),\s*(\d+)\)";
+                sql = Regex.Replace(sql, pattern, match =>
+                {
+                    int digits = int.Parse(match.Groups[2].Value);
+                    return $"CAST(ROUND({match.Groups[1].Value}, {digits}) AS DECIMAL(18, {digits}))";
+                });
+
                 using (var command = _context.Database.GetDbConnection().CreateCommand())
                 {
                     command.CommandText = sql;
                     await _context.Database.OpenConnectionAsync();
-
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         dataTable.Load(reader);
                     }
                 }
-
                 // DataTableの内容を出力ウィンドウに表示 ※※※確認用※※※
                 Debug.WriteLine("DataTable Contents:");
                 foreach (DataRow row in dataTable.Rows)
@@ -209,7 +214,6 @@ namespace HelloQuery.Controllers
                     var fields = row.ItemArray.Select(field => field.ToString());
                     Debug.WriteLine(string.Join(", ", fields));
                 }
-
                 return dataTable;
             }
             catch (Exception)
