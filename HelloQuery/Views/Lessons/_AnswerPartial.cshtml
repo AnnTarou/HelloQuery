@@ -12,11 +12,11 @@
 
         <!-- DataTableの表示 -->
         <p class="table"><span>テーブル</span></p>
-        <div class="data-table">		
+        <div class="data-table">
             <table>
                 <thead>
                     <tr>
-                        @foreach (System.Data.DataColumn column in @Model.LessonDataTable.Columns)
+                        @foreach (System.Data.DataColumn column in Model.LessonDataTable.Columns)
                         {
                             <th><p class="left2">@column.ColumnName<hr /></p></th>
                         }
@@ -28,13 +28,23 @@
                         <tr>
                             @foreach (System.Data.DataColumn column in Model.LessonDataTable.Columns)
                             {
-                            <td><p class="left2">@row[column] &emsp;&emsp; <hr /></p></td>
+                                <td>
+                                    @if (column.DataType == typeof(DateTime))
+                                    {
+                                        <p class="left2">@(((DateTime)row[column]).ToString("yyyy-MM-dd")) &emsp;&emsp; <hr /></p>
+                                    }
+                                    else
+                                    {
+                                        <p class="left2">@row[column] &emsp;&emsp; <hr /></p>
+                                    }
+                                </td>
                             }
                         </tr>
                     }
                 </tbody>
             </table>
-        </div><hr />
+        </div>
+        <hr />
 
 		<p class="kaisetsu"><span>解説</span></p>
         <div class="description-block">
