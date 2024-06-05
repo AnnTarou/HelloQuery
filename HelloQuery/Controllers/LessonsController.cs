@@ -120,19 +120,6 @@ namespace HelloQuery.Controllers
                 if (isCorrect)
                 {
                     // 正解の場合の処理
-                    // idをもとにLessonを取得
-                    var lesson = await _context.Lesson
-                        .FirstOrDefaultAsync(m => m.LessonId == lessonId);
-                    // LessonのAnswerカラムからSQL文を抽出
-                    string pattern = @"```\s*\r?\n([\s\S]*?)\r?\n```";
-                    string extractionAnswer = Regex.Match(lesson.Answer, pattern).Groups[1].Value;
-                    string lessonAnswer = AddUnicodePrefixToLiterals(extractionAnswer);
-                    string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
-
-                    // LINQを使用してSQL文を実行し、結果をDataTableに格納
-                    DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
-
-                    // AnswerPageにidを渡す
                     return RedirectToAction("AnswerPage", new { id = lessonId });
                 }
                 else
@@ -225,6 +212,16 @@ namespace HelloQuery.Controllers
             {
                 return NotFound();
             }
+
+            // LessonのAnswerカラムからSQL文を抽出
+            string pattern = @"```\s*\r?\n([\s\S]*?)\r?\n```";
+            string extractionAnswer = Regex.Match(viewModel.SelectedLesson.Answer, pattern).Groups[1].Value;
+            string lessonAnswer = AddUnicodePrefixToLiterals(extractionAnswer);
+            string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
+
+            // LINQを使用してSQL文を実行し、結果をDataTableに格納
+            DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
+            viewModel.LessonDataTable = lessonDataTable;
 
             // マークダウンの内容をHTMLに変換
             MarkdownConverter.ConvertMarkdownToHtml(viewModel.SelectedLesson);
