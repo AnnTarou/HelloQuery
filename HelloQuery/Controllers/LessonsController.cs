@@ -51,9 +51,13 @@ namespace HelloQuery.Controllers
                 MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
             }
 
-            // ViewModelに選択されたLessonと全Lessonをセット
+            // Booksテーブルのデータを取得
+            var books = await _context.Book.ToListAsync();
+
+            // ViewModelに選択されたLessonと全Lesson、Booksのデータをセット
             viewModel.SelectedLesson = selectedLesson;
             viewModel.AllLessons = lessons;
+            viewModel.Books = books;
 
             return View(viewModel);
         }
@@ -144,6 +148,33 @@ namespace HelloQuery.Controllers
             return result;
         }
 
+        // LINQを使用してSQL文を実行し、結果をDataTableに格納
+        private async Task<DataTable> GetDataTableAsync(string sql)
+        {
+            var dataTable = new DataTable();
+
+            using (var command = _context.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = sql;
+                await _context.Database.OpenConnectionAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    dataTable.Load(reader);
+                }
+            }
+
+            // DataTableの内容を出力ウィンドウに表示 ※※※確認用※※※
+            Debug.WriteLine("DataTable Contents:");
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var fields = row.ItemArray.Select(field => field.ToString());
+                Debug.WriteLine(string.Join(", ", fields));
+            }
+
+            return dataTable;
+        }
+
         // あきらめるがクリックされたとき: Lessons/Index
         [HttpPost]
         public async Task<IActionResult> GiveUp(int lessonId)
@@ -181,6 +212,16 @@ namespace HelloQuery.Controllers
             {
                 return NotFound();
             }
+
+            // LessonのAnswerカラムからSQL文を抽出
+            string pattern = @"```\s*\r?\n([\s\S]*?)\r?\n```";
+            string extractionAnswer = Regex.Match(viewModel.SelectedLesson.Answer, pattern).Groups[1].Value;
+            string lessonAnswer = AddUnicodePrefixToLiterals(extractionAnswer);
+            string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
+
+            // LINQを使用してSQL文を実行し、結果をDataTableに格納
+            DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
+            viewModel.LessonDataTable = lessonDataTable;
 
             // マークダウンの内容をHTMLに変換
             MarkdownConverter.ConvertMarkdownToHtml(viewModel.SelectedLesson);

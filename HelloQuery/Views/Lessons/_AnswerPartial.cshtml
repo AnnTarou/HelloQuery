@@ -10,6 +10,31 @@
         <p class="kaitou"><span>解答</span> @Html.Raw(@Model.SelectedLesson.Answer)</p>
         <hr />
 
+        <!-- DataTableの表示 -->
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        @foreach (System.Data.DataColumn column in @Model.LessonDataTable.Columns)
+                        {
+                            <th>@column.ColumnName</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (System.Data.DataRow row in Model.LessonDataTable.Rows)
+                    {
+                        <tr>
+                            @foreach (System.Data.DataColumn column in Model.LessonDataTable.Columns)
+                            {
+                                <td>@row[column]</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
 		<p class="kaisetsu"><span>解説</span></p>
         <div class="description-block">
              @Html.Raw(@Model.SelectedLesson.Reference)
