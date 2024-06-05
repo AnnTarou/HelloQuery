@@ -76,6 +76,9 @@ namespace HelloQuery.Controllers
                     // データベースの更新
                     await _context.SaveChangesAsync();
 
+                    // 登録成功メッセージを設定
+                    TempData["SuccessMessage"] = "アカウント登録が成功しました";
+
                     // DB更新成功したらログインページへリダイレクト
                     return RedirectToAction("Login", "Account");
                 }

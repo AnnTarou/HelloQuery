@@ -25,63 +25,80 @@ namespace HelloQuery.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int? id)
         {
-            // 全Lessonレコードを取得
-            var lessons = await _context.Lesson.ToListAsync();
-
-            // 選択されたLessonを入れる変数
-            Lesson selectedLesson;
-
-            // ViewModelのインスタンス生成
-            LessonViewModel viewModel = new LessonViewModel();
-
-            // idがnullとき最初のLessonを選択
-            if (id == null)
+            try
             {
-                selectedLesson = lessons.FirstOrDefault(m => m.LessonId == 1);
+                // 全Lessonレコードを取得
+                var lessons = await _context.Lesson.ToListAsync();
 
-                // マークダウンの内容をHTMLに変換
-                MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
+                // 選択されたLessonを入れる変数
+                Lesson selectedLesson;
+
+                // ViewModelのインスタンス生成
+                LessonViewModel viewModel = new LessonViewModel();
+
+                // idがnullとき最初のLessonを選択
+                if (id == null)
+                {
+                    selectedLesson = lessons.FirstOrDefault(m => m.LessonId == 1);
+
+                    // マークダウンの内容をHTMLに変換
+                    MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
+                }
+                // idがnullでない場合、選択されたLessonを取得
+                else
+                {
+                    selectedLesson = lessons.FirstOrDefault(m => m.LessonId == id);
+
+                    // マークダウンの内容をHTMLに変換
+                    MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
+                }
+
+                // Booksテーブルのデータを取得
+                var books = await _context.Book.ToListAsync();
+
+                // ViewModelに選択されたLessonと全Lesson、Booksのデータをセット
+                viewModel.SelectedLesson = selectedLesson;
+                viewModel.AllLessons = lessons;
+                viewModel.Books = books;
+
+                return View(viewModel);
             }
-            // idがnullでない場合、選択されたLessonを取得
-            else
+            catch (Exception ex)
             {
-                selectedLesson = lessons.FirstOrDefault(m => m.LessonId == id);
-
-                // マークダウンの内容をHTMLに変換
-                MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
-            }
-
-            // Booksテーブルのデータを取得
-            var books = await _context.Book.ToListAsync();
-
-            // ViewModelに選択されたLessonと全Lesson、Booksのデータをセット
-            viewModel.SelectedLesson = selectedLesson;
-            viewModel.AllLessons = lessons;
-            viewModel.Books = books;
-
-            return View(viewModel);
+                TempData["Message"] = "E-023:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }           
         }
 
         // 問題が選択されたときの部分ビュー作成メソッド
         public async Task<IActionResult> SelectLesson(int id)
         {
-            // JSから渡されたidをもとに、選択されたLessonを取得
-            var selectedLesson = await _context.Lesson
-                .FirstOrDefaultAsync(m => m.LessonId == id);
-
-            if (selectedLesson == null)
+            try
             {
-                return NotFound();
+                // JSから渡されたidをもとに、選択されたLessonを取得
+                var selectedLesson = await _context.Lesson
+                    .FirstOrDefaultAsync(m => m.LessonId == id);
+
+                if (selectedLesson == null)
+                {
+                    TempData["Message"] = "E-024:読込に失敗しました。";
+                    return RedirectToAction("error", "Error");
+                }
+
+                // マークダウンの内容をHTMLに変換
+                MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
+
+                LessonViewModel viewModel = new LessonViewModel();
+                viewModel.SelectedLesson = selectedLesson;
+                viewModel.AllLessons = null;
+
+                return PartialView("_LessonsPartial", viewModel);
             }
-
-            // マークダウンの内容をHTMLに変換
-            MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
-
-            LessonViewModel viewModel = new LessonViewModel();
-            viewModel.SelectedLesson = selectedLesson;
-            viewModel.AllLessons = null;
-
-            return PartialView("_LessonsPartial", viewModel);
+            catch (Exception ex)
+            {
+                TempData["Message"] = "E-025:"+ ex.Message;
+                return RedirectToAction("error", "Error");
+            }            
         }
 
         // 回答するがクリックされたとき: Lessons/Index
@@ -95,9 +112,19 @@ namespace HelloQuery.Controllers
                                      .AsNoTracking()
                                      .ToListAsync();
 
+            // リスト取得に失敗した場合
+            if (validAnswers == null)
+            {
+                TempData["Message"] = "E-026:データの取得に失敗しました";
+                return RedirectToAction("error", "Error");
+            }
+
             // 文字が入力されていなかったらIndexにリダイレクト
             if (string.IsNullOrWhiteSpace(answer))
             {
+                // リダイレクト時のメッセージを設定
+                TempData["AnswerMessage"] = "解答を入力してください";
+
                 return RedirectToAction("Index", new { id = lessonId });
             }
 
@@ -117,20 +144,29 @@ namespace HelloQuery.Controllers
                 bool isCorrect = validAnswers.Any(answer =>
                     string.Equals(formattedUserAnswer, answer, StringComparison.OrdinalIgnoreCase));
 
+                // 正解の場合の処理
                 if (isCorrect)
                 {
-                    // 正解の場合の処理
+                    // 正解の場合のメッセージを設定
+                    TempData["AnswerMessage"] = "おめでとう！正解です！";
+                    
                     return RedirectToAction("AnswerPage", new { id = lessonId });
                 }
+                // 不正解の場合の処理
                 else
                 {
-                    // 不正解の場合の処理
+                    // 不正解の場合のメッセージを設定
+                    TempData["AnswerMessage"] = "残念。違います。";
+                    
                     return RedirectToAction("Index", new { id = lessonId });
                 }
             }
+            // SQL文として成立しない場合はIndexにリダイレクト
             catch (SqlException ex)
             {
-                // SQL文として成立しない場合はIndexにリダイレクト
+                // 不正解の場合のメッセージを設定
+                TempData["AnswerMessage"] = "残念。違います。";
+
                 return RedirectToAction("Index", new { id = lessonId });
             }
         }
@@ -153,42 +189,60 @@ namespace HelloQuery.Controllers
         {
             var dataTable = new DataTable();
 
-            using (var command = _context.Database.GetDbConnection().CreateCommand())
+            try
             {
-                command.CommandText = sql;
-                await _context.Database.OpenConnectionAsync();
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = _context.Database.GetDbConnection().CreateCommand())
                 {
-                    dataTable.Load(reader);
+                    command.CommandText = sql;
+                    await _context.Database.OpenConnectionAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        dataTable.Load(reader);
+                    }
                 }
-            }
 
-            // DataTableの内容を出力ウィンドウに表示 ※※※確認用※※※
-            Debug.WriteLine("DataTable Contents:");
-            foreach (DataRow row in dataTable.Rows)
+                // DataTableの内容を出力ウィンドウに表示 ※※※確認用※※※
+                Debug.WriteLine("DataTable Contents:");
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    var fields = row.ItemArray.Select(field => field.ToString());
+                    Debug.WriteLine(string.Join(", ", fields));
+                }
+
+                return dataTable;
+            }
+            catch (Exception)
             {
-                var fields = row.ItemArray.Select(field => field.ToString());
-                Debug.WriteLine(string.Join(", ", fields));
+                throw;
             }
-
-            return dataTable;
         }
 
         // あきらめるがクリックされたとき: Lessons/Index
         [HttpPost]
         public async Task<IActionResult> GiveUp(int lessonId)
         {
-            // idをもとにLessonを取得
-            var lesson = await _context.Lesson
-                .FirstOrDefaultAsync(m => m.LessonId == lessonId);
-
-            if (lesson == null)
+            try
             {
-                return NotFound();
-            }
+                // idをもとにLessonを取得
+                var lesson = await _context.Lesson
+                    .FirstOrDefaultAsync(m => m.LessonId == lessonId);
 
-            return RedirectToAction("AnswerPage", new { id = lessonId });
+                // データベースからlessonを取得できなかったとき
+                if (lesson == null)
+                {
+                    TempData["Message"] = "E-027:データの取得に失敗しました";
+                    return RedirectToAction("error", "Error");
+                }
+
+                return RedirectToAction("AnswerPage", new { id = lessonId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "E-028:データの取得に失敗しました";
+                return RedirectToAction("error", "Error");
+            }
+           
         }
 
         //  Lessons/AnswerPageにGETアクセスがあったとき
@@ -198,80 +252,100 @@ namespace HelloQuery.Controllers
             // idがnullの場合はNotFoundを返す
             if (id == null)
             {
-                return NotFound();
+                TempData["Message"] = "E-029:データの取得に失敗しました";
+                return RedirectToAction("error", "Error");
             }
 
             // ViewModelのインスタンス生成
             var viewModel = new LessonViewModel();
 
-            // idをもとにLessonを取得
-            viewModel.SelectedLesson = await _context.Lesson.FirstOrDefaultAsync(m => m.LessonId == id);
-
-            // Lessonがnullの場合はNotFoundを返す
-            if (viewModel.SelectedLesson == null)
+            try
             {
-                return NotFound();
+                // idをもとにLessonを取得
+                viewModel.SelectedLesson = await _context.Lesson.FirstOrDefaultAsync(m => m.LessonId == id);
+
+                // Lessonがnullの場合はNotFoundを返す
+                if (viewModel.SelectedLesson == null)
+                {
+                    TempData["Message"] = "E-030:データの取得に失敗しました";
+                    return RedirectToAction("error", "Error");
+                }
+
+                // LessonのAnswerカラムからSQL文を抽出
+                string pattern = @"```\s*\r?\n([\s\S]*?)\r?\n```";
+                string extractionAnswer = Regex.Match(viewModel.SelectedLesson.Answer, pattern).Groups[1].Value;
+                string lessonAnswer = AddUnicodePrefixToLiterals(extractionAnswer);
+                string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
+
+                // LINQを使用してSQL文を実行し、結果をDataTableに格納
+                DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
+                viewModel.LessonDataTable = lessonDataTable;
+
+                // マークダウンの内容をHTMLに変換
+                MarkdownConverter.ConvertMarkdownToHtml(viewModel.SelectedLesson);
+
+                // 全Lessonを取得
+                viewModel.AllLessons = await _context.Lesson.ToListAsync();
+
+                return View(viewModel);
             }
-
-            // LessonのAnswerカラムからSQL文を抽出
-            string pattern = @"```\s*\r?\n([\s\S]*?)\r?\n```";
-            string extractionAnswer = Regex.Match(viewModel.SelectedLesson.Answer, pattern).Groups[1].Value;
-            string lessonAnswer = AddUnicodePrefixToLiterals(extractionAnswer);
-            string formattedLessonAnswer = Regex.Replace(lessonAnswer, @"\s+", " ");
-
-            // LINQを使用してSQL文を実行し、結果をDataTableに格納
-            DataTable lessonDataTable = await GetDataTableAsync(formattedLessonAnswer);
-            viewModel.LessonDataTable = lessonDataTable;
-
-            // マークダウンの内容をHTMLに変換
-            MarkdownConverter.ConvertMarkdownToHtml(viewModel.SelectedLesson);
-
-            // 全Lessonを取得
-            viewModel.AllLessons = await _context.Lesson.ToListAsync();
-
-            return View(viewModel);
+            catch (Exception ex)
+            {
+                TempData["Message"] = "E-031:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }            
         }
 
         // 回答ページの部分ビュー作成メソッド
         public async Task<IActionResult> GetAnswer(int id)
         {
-            // JSから渡されたidをもとに、選択されたLessonを取得
-            var lesson = await _context.Lesson
-                .FirstOrDefaultAsync(m => m.LessonId == id);
+            try
+            {
+                // JSから渡されたidをもとに、選択されたLessonを取得
+                var lesson = await _context.Lesson
+                    .FirstOrDefaultAsync(m => m.LessonId == id);
 
-            // ViewModelのインスタンス生成
-            var viewModel = new LessonViewModel();
+                // ViewModelのインスタンス生成
+                var viewModel = new LessonViewModel();
 
-            if (lesson == null)
+                if (lesson == null)
+                {
+                   return NotFound();
+                }
+
+                // マークダウンの内容をHTMLに変換
+                MarkdownConverter.ConvertMarkdownToHtml(lesson);
+
+                viewModel.SelectedLesson = lesson;
+                viewModel.AllLessons = null;
+
+                return PartialView("_AnswerPartial", viewModel);
+            }
+            catch (Exception ex) 
             {
                 return NotFound();
-            }
-
-            // マークダウンの内容をHTMLに変換
-            MarkdownConverter.ConvertMarkdownToHtml(lesson);
-
-            viewModel.SelectedLesson = lesson;
-            viewModel.AllLessons = null;
-
-            return PartialView("_AnswerPartial", viewModel);
+            }            
         }
 
         // 「ランダム練習問題」がクリックされたとき
         [HttpGet]
-        public async Task<IActionResult> Practice()
+        public IActionResult Practice()
         {
             // セッションから前回のLessonIdを取得
             int lastLessonId = HttpContext.Session.GetInt32("LastLessonId") ?? 0;
             int last2LessonId = HttpContext.Session.GetInt32("Last2LessonId") ?? 0;
 
+            // 全Lessonの数＋1
+            int lessonCount = 14;
+
             // レッスンidをランダム生成
             Random randomPractice = new Random();
-            int randomLessonId = randomPractice.Next(1, 5);
+            int randomLessonId = randomPractice.Next(1, lessonCount);
 
             // 前回のLessonIdと同じ場合は再度生成
             while (randomLessonId == lastLessonId || randomLessonId == last2LessonId)
             {
-                randomLessonId = randomPractice.Next(1, 5);
+                randomLessonId = randomPractice.Next(1, lessonCount);
             }
 
             // 生成したLessonIdをセッションに保存
