@@ -50,10 +50,15 @@
             <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
 			<p><input type="submit" value="苦手リストに保存" class="btn btn--cubic" /></p>
         </form>
-
-		<p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })"><button class="btn btn--cubic">もう一度チャレンジする</button></a></p>
-		<p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })"><button class="btn btn--cubic">次の問題</button></a></p>
-    </div>
+        <p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })" class="btn btn--cubic">もう一度チャレンジする</a></p>
+        @if (Model.SelectedLesson.LessonId == Model.AllLessons.Count)
+        {
+            <p><button class="btn btn--cubic" disabled>次の問題</button></p>
+        }
+        else
+        {
+            <p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })" class="btn btn--cubic">次の問題</a></p>
+        }
  </body>
 
  <style>
