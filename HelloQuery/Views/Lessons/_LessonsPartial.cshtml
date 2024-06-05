@@ -15,7 +15,7 @@
         <!--問題文-->
         <div class="description-block2">
 			<b>＜ 問題 ＞</b> @Html.Raw(@Model.SelectedLesson.Question)
-		</div>
+		</div><hr />
 
         <!--booksテーブル-->
         <div class="Books-block">
@@ -129,6 +129,7 @@
         border: none;
         font-weight: bold;
     }
+
     /*ツールチップ*/
     .hint1 {
         position: relative;
@@ -176,6 +177,7 @@
         top: -60px;
         left: 120px;
     }
+
     /* 解答box */
     input[type="text"], textarea {
         width: 70%;
@@ -199,5 +201,15 @@
         font-size:22px;
         width: 13rem;
         height: 2.7rem;
+    }
+
+    /*booksテーブル*/
+    thead,tbody{
+        color:white;
+        font-size:20px;
+    }
+
+    th{
+        font-size: 23px;
     }
 </style>

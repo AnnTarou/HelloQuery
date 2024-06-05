@@ -4,20 +4,21 @@
     <div class="text-center">
         <h1>解答＆解説</h1><hr />
 
-		<p class="mondai"><span>問題</span> @Html.Raw(@Model.SelectedLesson.Question)</p>
+		<p class="mondai"><span>問題</span>@Html.Raw(@Model.SelectedLesson.Question)</p>
         <hr  />
-        
-        <p class="kaitou"><span>解答</span> @Html.Raw(@Model.SelectedLesson.Answer)</p>
+    </div>
+		<p class="kaitou"><span>解答</span><h2>@Html.Raw(@Model.SelectedLesson.Answer)</h2></p>
         <hr />
 
         <!-- DataTableの表示 -->
-        <div class="data-table">
+        <p class="table"><span>テーブル</span></p>
+        <div class="data-table">		
             <table>
                 <thead>
                     <tr>
                         @foreach (System.Data.DataColumn column in @Model.LessonDataTable.Columns)
                         {
-                            <th>@column.ColumnName</th>
+                            <th><p class="left2">@column.ColumnName<hr /></p></th>
                         }
                     </tr>
                 </thead>
@@ -27,13 +28,13 @@
                         <tr>
                             @foreach (System.Data.DataColumn column in Model.LessonDataTable.Columns)
                             {
-                                <td>@row[column]</td>
+                            <td><p class="left2">@row[column] &emsp;&emsp; <hr /></p></td>
                             }
                         </tr>
                     }
                 </tbody>
             </table>
-        </div>
+        </div><hr />
 
 		<p class="kaisetsu"><span>解説</span></p>
         <div class="description-block">
@@ -46,19 +47,21 @@
         <br />
 
         <!--各種ボタン-->
-        <form method="post" asp-controller="UserLessons" asp-action="Create">
-            <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
-			<p><input type="submit" value="苦手リストに保存" class="btn btn--cubic" /></p>
-        </form>
-        <p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })" class="btn btn--cubic">もう一度チャレンジする</a></p>
-        @if (Model.SelectedLesson.LessonId == Model.AllLessons.Count)
-        {
-            <p><button class="btn btn--cubic" disabled>次の問題</button></p>
-        }
-        else
-        {
-            <p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })" class="btn btn--cubic">次の問題</a></p>
-        }
+        <div class="text-center">
+            <form method="post" asp-controller="UserLessons" asp-action="Create">
+                <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
+			    <p><input type="submit" value="苦手リストに保存" class="btn btn--cubic" /></p>
+            </form>
+            <p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })" class="btn btn--cubic">もう一度チャレンジする</a></p>
+            @if (Model.SelectedLesson.LessonId == Model.AllLessons.Count)
+            {
+                <p><button class="btn btn--cubic" disabled>次の問題</button></p>
+            }
+            else
+            {
+                <p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })" class="btn btn--cubic">次の問題</a></p>
+            }
+        </div>
  </body>
 
  <style>
@@ -72,6 +75,11 @@
         font-size: 43px;
         display: inline-block;
         transform: skewX(-15deg);
+     }
+
+     h2{
+        display: flex;
+        justify-content: center;
     }
 
      .text-center {
@@ -82,13 +90,33 @@
         display: flex;
         justify-content: center;
     }
-    .mondai, .kaitou, .kaisetsu{
+    .mondai, .kaitou, .kaisetsu, .table{
         line-height:2.5;
+        font-size: 29px;
+    }
+
+    .mondai, .kaitou, .kaisetsu, .table, .btn, h1 {
+        text-align: center;
+    }
+
+    .mondai span, .kaitou span, .kaisetsu span, .table span{
+        background: linear-gradient(transparent 50%, #653616 50%);
+        color:white;
+    }
+
+    /*booksテーブル*/
+    .data-table{
+        display:flex;
+        justify-content: center;
+        font-size:27px;
+    }
+
+    thead{
         font-size: 28px;
     }
 
-    .mondai span, .kaitou span, .kaisetsu span {
-        background: linear-gradient(transparent 50%, #653616 50%);
+    .left2{
+        text-align:left;
+        font-size: 25px;
     }
-
  </style>
