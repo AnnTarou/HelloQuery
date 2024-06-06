@@ -177,22 +177,15 @@ namespace HelloQuery.Controllers
         // 文字リテラルにNプレフィックス追加するメソッド
         private string AddUnicodePrefixToLiterals(string query)
         {
-            // 正規表現パターン: '...' で囲まれた文字列リテラルを見つける
             string pattern = @"'([^']*)'";
-
-            // 置換パターン: N'...' として置換
             string replacement = "N'$1'";
-
-            // 正規表現で置換
             string result = Regex.Replace(query, pattern, replacement);
-
             return result;
         }
 
         // カンマの後ろにスペースを追加するメソッド
         private string AddSpaceAfterComma(string query)
         {
-            // カンマの後ろにスペースがない場合、スペースを追加する
             string pattern = @",(\S)";
             string replacement = @", $1";
             string result = Regex.Replace(query, pattern, replacement);
@@ -209,6 +202,7 @@ namespace HelloQuery.Controllers
         private async Task<DataTable> GetDataTableAsync(string sql)
         {
             var dataTable = new DataTable();
+
             try
             {
                 // ROUND関数の検出と表示桁数の調整
@@ -219,6 +213,7 @@ namespace HelloQuery.Controllers
                     return $"CAST(ROUND({match.Groups[1].Value}, {digits}) AS DECIMAL(18, {digits}))";
                 });
 
+                // データベースコマンドを実行し、その結果をDataTableに読み込む
                 using (var command = _context.Database.GetDbConnection().CreateCommand())
                 {
                     command.CommandText = sql;
