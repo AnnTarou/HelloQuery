@@ -73,32 +73,23 @@ namespace HelloQuery.Controllers
         // 問題が選択されたときの部分ビュー作成メソッド
         public async Task<IActionResult> SelectLesson(int id)
         {
-            try
+            // JSから渡されたidをもとに、選択されたLessonを取得
+            var selectedLesson = await _context.Lesson
+                .FirstOrDefaultAsync(m => m.LessonId == id);
+
+            if (selectedLesson == null)
             {
-                // JSから渡されたidをもとに、選択されたLessonを取得
-                var selectedLesson = await _context.Lesson
-                    .FirstOrDefaultAsync(m => m.LessonId == id);
-
-                if (selectedLesson == null)
-                {
-                    TempData["Message"] = "E-024:読込に失敗しました。";
-                    return RedirectToAction("error", "Error");
-                }
-
-                // マークダウンの内容をHTMLに変換
-                MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
-
-                LessonViewModel viewModel = new LessonViewModel();
-                viewModel.SelectedLesson = selectedLesson;
-                viewModel.AllLessons = null;
-
-                return PartialView("_LessonsPartial", viewModel);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                TempData["Message"] = "E-025:"+ ex.Message;
-                return RedirectToAction("error", "Error");
-            }            
+
+            // マークダウンの内容をHTMLに変換
+            MarkdownConverter.ConvertMarkdownToHtml(selectedLesson);
+
+            LessonViewModel viewModel = new LessonViewModel();
+            viewModel.SelectedLesson = selectedLesson;
+            viewModel.AllLessons = null;
+
+            return PartialView("_LessonsPartial", viewModel);
         }
 
         // 回答するがクリックされたとき: Lessons/Index
@@ -246,7 +237,6 @@ namespace HelloQuery.Controllers
                 TempData["Message"] = "E-028:データの取得に失敗しました";
                 return RedirectToAction("error", "Error");
             }
-           
         }
 
         //  Lessons/AnswerPageにGETアクセスがあったとき

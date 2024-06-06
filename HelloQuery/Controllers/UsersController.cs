@@ -133,6 +133,7 @@ namespace HelloQuery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(User user)
         {
+            
             // セッションからユーザーIDを取得
             var loginUser = (User)HttpContext.Items["User"];
 
@@ -187,7 +188,7 @@ namespace HelloQuery.Controllers
                     // DB更新成功したらアカウント詳細ページにリダイレクト
                     return RedirectToAction("Details", "Users");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
                     if (!UserExists(user.UserId))
                     {
@@ -196,13 +197,9 @@ namespace HelloQuery.Controllers
                     }
                     else
                     {
-                        throw;
+                        TempData["Message"] = "E-016:ex.Message";
+                        return RedirectToAction("error", "Error");
                     }
-                }
-                catch (Exception ex)
-                {
-                    TempData["Message"] = "E-016:" + ex.Message;
-                    return RedirectToAction("error", "Error");
                 }
             }
             else
@@ -311,7 +308,6 @@ namespace HelloQuery.Controllers
                 return RedirectToAction("error", "Error");
             }           
         }
-
         private bool UserExists(int id)
         {
             return _context.User.Any(e => e.UserId == id);
