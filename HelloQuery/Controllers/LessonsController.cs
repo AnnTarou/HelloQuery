@@ -119,11 +119,8 @@ namespace HelloQuery.Controllers
                 return RedirectToAction("Index", new { id = lessonId });
             }
 
-            // ユーザーの入力クエリにシングルクォートがある場合はNプレフィックスを追加
-            string userAnswer = AddUnicodePrefixToLiterals(answer);
-
-            // ユーザーの入力内容と整形後のSQL文から改行文字を取り除く
-            string formattedUserAnswer = Regex.Replace(userAnswer, @"\s+", " ");
+            // 入力文字列を整形
+            string formattedUserAnswer = FormatUserInput(answer);
 
             // 整形後の文字列を出力ウィンドウに表示 ※※※確認用※※※
             Debug.WriteLine("User Formatted SQL query:");
@@ -162,23 +159,50 @@ namespace HelloQuery.Controllers
             }
         }
 
-        // Nプレフィックス追加するメソッド
+        // ユーザーの入力文字列を整形するメソッド
+        private string FormatUserInput(string userInput)
+        {
+            // Nプレフィックスを追加
+            string formattedInput = AddUnicodePrefixToLiterals(userInput);
+
+            // カンマの後ろにスペースを追加
+            formattedInput = AddSpaceAfterComma(formattedInput);
+
+            // 改行を取り除く
+            formattedInput = RemoveNewLines(formattedInput);
+
+            return formattedInput;
+        }
+
+        // 文字リテラルにNプレフィックス追加するメソッド
         private string AddUnicodePrefixToLiterals(string query)
         {
-            // 正規表現パターン: '...' で囲まれた文字列リテラルを見つける
             string pattern = @"'([^']*)'";
-            // 置換パターン: N'...' として置換
             string replacement = "N'$1'";
-
-            // 正規表現で置換
             string result = Regex.Replace(query, pattern, replacement);
             return result;
+        }
+
+        // カンマの後ろにスペースを追加するメソッド
+        private string AddSpaceAfterComma(string query)
+        {
+            string pattern = @",(\S)";
+            string replacement = @", $1";
+            string result = Regex.Replace(query, pattern, replacement);
+            return result;
+        }
+
+        // 改行を取り除くメソッド
+        private string RemoveNewLines(string query)
+        {
+            return Regex.Replace(query, @"\s+", " ");
         }
 
         // LINQを使用してSQL文を実行し、結果をDataTableに格納
         private async Task<DataTable> GetDataTableAsync(string sql)
         {
             var dataTable = new DataTable();
+
             try
             {
                 // ROUND関数の検出と表示桁数の調整
@@ -189,6 +213,7 @@ namespace HelloQuery.Controllers
                     return $"CAST(ROUND({match.Groups[1].Value}, {digits}) AS DECIMAL(18, {digits}))";
                 });
 
+                // データベースコマンドを実行し、その結果をDataTableに読み込む
                 using (var command = _context.Database.GetDbConnection().CreateCommand())
                 {
                     command.CommandText = sql;
