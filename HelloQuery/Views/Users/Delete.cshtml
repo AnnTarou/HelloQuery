@@ -1,39 +1,149 @@
 ﻿@model HelloQuery.Models.User
 
 @{
+    Layout = "_LoggedInLayout";
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
+<h3 class="text-center">※※アカウントを削除します※※</h3>
 <div>
-    <h4>User</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-    </dl>
+    <div class="text-center">
+        <dl class="row">
+            <div class="details">
+                @Html.DisplayNameFor(model => model.UserName) :  @Html.DisplayFor(model => model.UserName)
+            </div>
+
+            <div class="details">
+                @Html.DisplayNameFor(model => model.Email) :  @Html.DisplayFor(model => model.Email)
+            </div>
+
+            <div class="details">
+                @Html.DisplayNameFor(model => model.Password) :  <span>セキュリティ保護のためパスワードは表示できません</span>
+            </div>
+        </dl>
+        </div>
     
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="UserId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+    <br />
+    <br />
+
+    <form method="post" asp-controller="Users" asp-action="Delete">
+        <input type="hidden" name="id" value="@Model.UserId" />
+        <div class="text-center">
+		<label class="open" for="popup"><p class="btn btn-danger">削除</p></label>
+        </div>
+		<input type="checkbox" id="popup">
+		    <div class="overlay">
+			    <div class="window">
+				<label class="close" for="popup">×</label>
+				<label class="close" for="popup">×</label>
+				<h4 class="text"><br />
+					このアカウントを本当に削除しますか？
+
+                    <br />
+					<br />
+
+					<div class="moji">※削除したアカウントのデータは復元できません※</div>
+
+					<br />
+
+                    <p>
+                    <form method="post" asp-action="Delete" asp-controller="Users">
+                        <button type="submit" class="Pbtn" name="id" value=@Model?.UserId>削除</button>
+                    </form>
+                    </p>
+				</h4>
+			</div>
+		</div>
     </form>
+
+        <p class="text-center"><a asp-action="Details" asp-controller="Users"  class="btn btn--cubic">マイページに戻る</a></p>
 </div>
+
+<style>
+    h3 {
+        line-height: 2.5;
+    }
+
+    .details {
+        font-size: 26px;
+        line-height: 3.0;
+        text-align: center;
+    }
+
+    .btn{
+        font-size: 20px;
+    }
+
+  /*削除の再確認ポップアップ*/
+    .open {
+        cursor: pointer;
+    }
+
+    #popup {
+        display: none;
+    }
+
+    .overlay {
+        display: none;
+    }
+
+    .Pbtn{
+        width: 10rem;
+        height: 2.0rem;
+        font-size: 17px;
+        background-color: #AA0000;
+        color: white;
+
+    }
+
+    #popup:checked + .overlay {
+        display: block;
+        background-color: #00000070;
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        top: 0;
+        left: 0;
+    }
+
+    .moji{
+        line-height: 2.5;
+        font-size:15px;
+        text-align:center;
+    }
+
+    .text{
+        text-align: center;
+    }
+
+    .window {
+        width: 100vw;
+        max-width: 380px;
+        height: 200px;
+        background-color:white;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .text {
+        font-size: 20px;
+        margin: 0;
+        color: black;
+    }
+
+    .close {
+        cursor: pointer;
+        position: absolute;
+        top: 5px;
+        right: 12px;
+        font-size: 24px;
+        color:black;
+    }
+</style>

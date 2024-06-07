@@ -1,20 +1,16 @@
 ﻿@model HelloQuery.Models.LessonViewModel
-
 @{
     Layout = "_LoggedInLayout";
-    ViewData["Title"] = "Lesson";
+    ViewData["Title"] = "Answer";
 }
+
+<!--回答＆解説の部分ビュー-->
 <body>
     <div class="container">
-        <div class="kaitou">
-            <!--部分ビュー-->
-            <div id="partialview-section">
-                <p> @await Html.PartialAsync("_LessonsPartial")</p>
-			</div>
-            
-            <br />
-            <br />
-
+        <div class="k-k">
+            <div id="partial-answerview-container">
+                @await Html.PartialAsync("_AnswerPartial")
+            </div>
         </div>
 
         <!--ポップアップメッセージ内容-->
@@ -24,11 +20,12 @@
                 @TempData["AnswerMessage"]
             </div>
         }
- 
-        <!--問題一覧-->
+
+        <!--問題一覧バー-->
         <aside class="side">
-            <div class="side-in"><br />
-				<h3 class="text-center">≪問題一覧≫</h3>
+            <div class="side-in">
+                <br />
+                <h3 class="text-center">≪問題一覧≫</h3>
 
                 <ul id="lesson-title" style="list-style-type: none;">
                     @foreach (var item in Model.AllLessons)
@@ -45,38 +42,32 @@
 
 <!--JSファイルの呼び出し-->
 @section Scripts {
-    <script src="~/js/lessonpartialview.js"></script>
+    <script src="~/js/answerpartialview.js"></script>
 }
 
 <style>
     .container {
-        position: relative; 
+        position: relative;
     }
 
-    .kaitou {
+    .k-k {
         width: 80%;
-        float: left;
     }
 
     .side {
         position: absolute;
-        top: 0;
-        right: 0;
+        top: -18vw;
+        right: -7.9vw;
         height: 100%;
     }
 
     .side-in {
-		background-color: #000033;
+        background-color: #000033;
         color: #fafad2;
         position: absolute;
-        top: calc(100% - 1.2vw);
-        left: calc(100% - 15vw);
+        top: 17vw;
+        right: 1px;
         width: 23vw;
-    }
-
-    .lesson{
-        font-size:20px;
-        line-height:3.0;
     }
 
     li {
@@ -91,10 +82,10 @@
         top: 30%;
         left: 50%;
         transform: translate(-50%, -50%);
-        padding: 20px;
-        background-color: #fafad2;
+        padding: 30px;
+        background-color: white;
         color: #000033;
-        border: 1px solid #fafad2;
+        border: 1px solid white;
         border-radius: .25rem;
         font-size: 2em;
     }
@@ -110,3 +101,5 @@
         }
     }
 </style>
+
+

@@ -1,36 +1,54 @@
 ﻿@model HelloQuery.Models.User
 
 @{
+    Layout = "_LoggedInLayout";
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1 class="text-center">マイページ</h1>
 
-<div>
-    <h4>User</h4>
     <hr />
+
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
+        <div class="details">
+            @Html.DisplayNameFor(model => model.UserName) :  @Html.DisplayFor(model => model.UserName)
+        </div>
+
+        <div class="details">
+            @Html.DisplayNameFor(model => model.Email) :  @Html.DisplayFor(model => model.Email)
+        </div>
+
+        <div class="details">
+            @Html.DisplayNameFor(model => model.Password) :  <span>セキュリティ保護のためパスワードは表示できません</span>
+        </div>
     </dl>
+
+<br />
+<br />
+
+<div class="text-center">
+    <p><a asp-action="Edit" asp-route-id="@Model?.UserId" class="btn btn--cubic">編集</a></p>
+    <p><a　asp-action ="Delete" class="btn btn--cubic">削除</a></p>
+    <p><a href=@Url.Action("Index","Lessons") class="btn btn--cubic">レッスンへ戻る</a></p>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.UserId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    a{
+        color: white;
+        text-decoration: none;
+    }
+
+    h1 {
+        line-height: 2.5;
+    }
+
+    .details {
+        font-size:26px;
+        line-height: 3.0;
+        text-align: center;
+    }
+
+    .btn {
+		font-size: 20px;
+    }
+</style>

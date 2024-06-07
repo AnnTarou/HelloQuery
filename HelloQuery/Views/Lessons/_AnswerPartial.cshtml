@@ -1,0 +1,131 @@
+﻿@model HelloQuery.Models.LessonViewModel
+
+<body>
+    <div class="text-center">
+        <h1>解答＆解説</h1><hr />
+
+		<p class="mondai"><span>問題</span>@Html.Raw(@Model.SelectedLesson.Question)</p>
+        <hr  />
+    </div>
+		<p class="kaitou"><span>解答</span><h2>@Html.Raw(@Model.SelectedLesson.Answer)</h2></p>
+        <hr />
+
+        <!-- DataTableの表示 -->
+        <p class="table"><span>テーブル</span></p>
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        @foreach (System.Data.DataColumn column in Model.LessonDataTable.Columns)
+                        {
+                            <th><p class="left2">@column.ColumnName<hr /></p></th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (System.Data.DataRow row in Model.LessonDataTable.Rows)
+                    {
+                        <tr>
+                            @foreach (System.Data.DataColumn column in Model.LessonDataTable.Columns)
+                            {
+                                <td>
+                                    @if (column.DataType == typeof(DateTime))
+                                    {
+                                        <p class="left2">@(((DateTime)row[column]).ToString("yyyy-MM-dd")) &emsp;&emsp; <hr /></p>
+                                    }
+                                    else
+                                    {
+                                        <p class="left2">@row[column] &emsp;&emsp; <hr /></p>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <hr />
+
+		<p class="kaisetsu"><span>解説</span></p>
+        <div class="description-block">
+             @Html.Raw(@Model.SelectedLesson.Reference)
+        </div>
+
+        <hr />
+
+        <br />
+
+        <!--各種ボタン-->
+        <div class="text-center">
+            <form method="post" asp-controller="UserLessons" asp-action="Create">
+                <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
+			    <p><input type="submit" value="苦手リストに保存" class="btn btn--cubic" /></p>
+            </form>
+            <p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId })" class="btn btn--cubic">もう一度チャレンジする</a></p>
+            @if (Model.SelectedLesson.LessonId == Model.AllLessons.Count)
+            {
+                <p><button class="btn btn--cubic" disabled>次の問題</button></p>
+            }
+            else
+            {
+                <p><a href="@Url.Action("Index", "Lessons", new { id = Model.SelectedLesson.LessonId + 1 })" class="btn btn--cubic">次の問題</a></p>
+            }
+        </div>
+ </body>
+
+ <style>
+     .btn{
+         position:sticky;
+         bottom:140px;
+         font-size:20px;
+     }
+
+     h1{
+        font-size: 43px;
+        display: inline-block;
+        transform: skewX(-15deg);
+     }
+
+     h2{
+        display: flex;
+        justify-content: center;
+    }
+
+     .text-center {
+		font-size: 26px;
+    }
+
+    .description-block {
+        display: flex;
+        justify-content: center;
+    }
+    .mondai, .kaitou, .kaisetsu, .table{
+        line-height:2.5;
+        font-size: 29px;
+    }
+
+    .mondai, .kaitou, .kaisetsu, .table, .btn, h1 {
+        text-align: center;
+    }
+
+    .mondai span, .kaitou span, .kaisetsu span, .table span{
+        background: linear-gradient(transparent 50%, #653616 50%);
+        color:white;
+    }
+
+    /*booksテーブル*/
+    .data-table{
+        display:flex;
+        justify-content: center;
+        font-size:27px;
+    }
+
+    thead{
+        font-size: 28px;
+    }
+
+    .left2{
+        text-align:left;
+        font-size: 25px;
+    }
+ </style>

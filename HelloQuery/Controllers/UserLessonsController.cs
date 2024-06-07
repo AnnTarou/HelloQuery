@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HelloQuery.Data;
+﻿using HelloQuery.Data;
+using HelloQuery.Filter;
+using HelloQuery.Method;
 using HelloQuery.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloQuery.Controllers
 {
+    // ログインしているかチェックするフィルター追加
+    [SessionCheckFilter]
     public class UserLessonsController : Controller
     {
         private readonly HelloQueryContext _context;
@@ -19,147 +18,150 @@ namespace HelloQuery.Controllers
             _context = context;
         }
 
-        // GET: UserLessons
+        // UserLessons/Index:GETアクセスあったとき
         public async Task<IActionResult> Index()
         {
-            var helloQueryContext = _context.UserLesson.Include(u => u.Lesson).Include(u => u.User);
-            return View(await helloQueryContext.ToListAsync());
+            // 現在ログインしているユーザーを取得
+            User loginUser = (User)HttpContext.Items["User"];
+
+            // データベースへ接続
+            try
+            {
+                // ログインしているユーザーのUserLessonを取得
+                var userLessons = await _context.UserLesson
+                    .Include(ul => ul.Lesson)
+                    .Where(ul => ul.UserId == loginUser.UserId)
+                    .ToListAsync();
+
+                return View(userLessons);
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "E-002:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }
         }
 
-        // GET: UserLessons/Details/5
+        // 「詳細」ボタンがおされたとき　UserLessons/Details：GETアクセスあったとき
         public async Task<IActionResult> Details(int? id)
         {
+            //LessonIdの引数が入ってこなかった場合エラーページ表示
             if (id == null)
             {
-                return NotFound();
+                TempData["Message"] = "E-003:もう一度ログインしてください";
+                return RedirectToAction("error", "Error");
             }
 
-            var userLesson = await _context.UserLesson
-                .Include(u => u.Lesson)
-                .Include(u => u.User)
-                .FirstOrDefaultAsync(m => m.UserLessonId == id);
-            if (userLesson == null)
+            // ログインしているユーザーを取得
+            User loginUser = (User)HttpContext.Items["User"];
+
+            // データベースにアクセス
+            try
             {
-                return NotFound();
+                var lesson = await _context.UserLesson
+               .Include(u => u.Lesson)
+               .FirstOrDefaultAsync(m => m.UserId == loginUser.UserId && m.LessonId == id);
+
+                // lessonがnullとなった場合
+                if (lesson == null)
+                {
+                    TempData["Message"] = "E-004:もう一度ログインしてください";
+                    return RedirectToAction("error", "Error");
+                }
+
+                // マークダウンの内容をHTMLに変換
+                MarkdownConverter.ConvertMarkdownToHtml(lesson.Lesson);
+
+                return View(lesson);
             }
-
-            return View(userLesson);
+            catch(Exception ex) 
+            {
+                TempData["Message"] = "E-005:" + ex.Message;
+                return RedirectToAction("error", "Error");
+            }
         }
 
-        // GET: UserLessons/Create
-        public IActionResult Create()
-        {
-            ViewData["LessonId"] = new SelectList(_context.Lesson, "LessonId", "LessonId");
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Email");
-            return View();
-        }
-
-        // POST: UserLessons/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // 「苦手リストに保存」が押されたとき　/　UserLessons/Create：POSTメソッド
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserLessonId,LessonId,UserId")] UserLesson userLesson)
+        public async Task<IActionResult> Create(int? lessonId)
         {
-            if (ModelState.IsValid)
+            // LessonIdがnullの場合
+            if (lessonId == null)
             {
+                TempData["Message"] = "E-006:もう一度ログインしてください:";
+                return RedirectToAction("error", "Error");
+            }
+
+            // 現在ログインしているユーザーを取得
+            User loginUser = (User)HttpContext.Items["User"];
+
+            // データベースに接続
+            try
+            {
+                // 現在のユーザーがすでにlessonIdを持っているかどうかを確認
+                var existingUserLesson = await _context.UserLesson
+                    .FirstOrDefaultAsync(ul => ul.UserId == loginUser.UserId && ul.LessonId == lessonId);
+
+                // 現在のユーザーがすでにlessonIdを持っている場合は何もしない
+                if (existingUserLesson != null)
+                {
+                    return RedirectToAction("AnswerPage", "Lessons", new { id = lessonId });
+                }
+
+                // UserLessonのインスタンスを生成
+                UserLesson userLesson = new UserLesson()
+                {
+                    UserId = loginUser.UserId,
+                    LessonId = (int)lessonId
+                };
+
                 _context.Add(userLesson);
+
+                // データベースの変更を保存
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                return RedirectToAction("Index", "UserLessons");
             }
-            ViewData["LessonId"] = new SelectList(_context.Lesson, "LessonId", "LessonId", userLesson.LessonId);
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Email", userLesson.UserId);
-            return View(userLesson);
+            catch (Exception ex)
+            {
+                TempData["Message"] = "E-007:"  + ex.Message;
+                return RedirectToAction("error", "Error");
+            }            
         }
 
-        // GET: UserLessons/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userLesson = await _context.UserLesson.FindAsync(id);
-            if (userLesson == null)
-            {
-                return NotFound();
-            }
-            ViewData["LessonId"] = new SelectList(_context.Lesson, "LessonId", "LessonId", userLesson.LessonId);
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Email", userLesson.UserId);
-            return View(userLesson);
-        }
-
-        // POST: UserLessons/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // 苦手リストの「削除」ボタンがおされたとき
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserLessonId,LessonId,UserId")] UserLesson userLesson)
-        {
-            if (id != userLesson.UserLessonId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(userLesson);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserLessonExists(userLesson.UserLessonId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["LessonId"] = new SelectList(_context.Lesson, "LessonId", "LessonId", userLesson.LessonId);
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Email", userLesson.UserId);
-            return View(userLesson);
-        }
-
-        // GET: UserLessons/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            // idが入ってこなかった場合
             if (id == null)
             {
-                return NotFound();
+                TempData["Message"] = "E-008:もう一度ログインしてください:";
+                return RedirectToAction("error", "Error");
             }
-
-            var userLesson = await _context.UserLesson
-                .Include(u => u.Lesson)
-                .Include(u => u.User)
-                .FirstOrDefaultAsync(m => m.UserLessonId == id);
-            if (userLesson == null)
+            // データベースに接続
+            try
             {
-                return NotFound();
+                var userLesson = await _context.UserLesson.FindAsync(id);
+
+                // UserLessonがDBに見つかった場合は削除
+                if (userLesson != null)
+                {
+                    _context.UserLesson.Remove(userLesson);
+                }
+
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+
             }
-
-            return View(userLesson);
-        }
-
-        // POST: UserLessons/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var userLesson = await _context.UserLesson.FindAsync(id);
-            if (userLesson != null)
+            catch(Exception ex) 
             {
-                _context.UserLesson.Remove(userLesson);
+                TempData["Message"] = "E-009:" + ex.Message;
+                return RedirectToAction("error", "Error");
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool UserLessonExists(int id)

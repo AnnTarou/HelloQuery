@@ -1,0 +1,215 @@
+﻿@model HelloQuery.Models.LessonViewModel
+
+<body>
+    <div>
+        <!--タイトル-->
+        <div class="Title-block">
+            <h1>― @Model.SelectedLesson.Title ―</h1>
+        </div><hr />
+        
+        <!--説明-->
+        <div class="description-block1">
+            <p>@Html.Raw(Model.SelectedLesson.Description)</p>
+        </div><hr />
+    
+        <!--問題文-->
+        <div class="description-block2">
+			<b>＜ 問題 ＞</b> @Html.Raw(@Model.SelectedLesson.Question)
+		</div><hr />
+
+        <!--booksテーブル-->
+        <div class="Books-block">
+            <b>＜books テーブル＞</b>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>title</th>
+                        <th>author</th>
+                        <th>publication_date</th>
+                        <th>pages</th>
+                        <th>price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var book in Model.Books)
+                    {
+                        <tr>
+                            <td>@book.Title</td>
+                            <td>@book.Author</td>
+                            <td>@book.PublicationDate.ToString("yyyy-MM-dd")</td>
+                            <td>@book.Pages</td>
+                            <td>@book.Price</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!--ヒント-->
+        <div class="Hint-block">
+            <b>＜ヒント＞</b>
+            <button class="hint1" onclick="document.getElementById('hint').style.display = 'inline';">
+                👀
+                <div class="description1">ヒントを表示します</div>
+            </button>
+
+
+            <button class="hint2" onclick="document.getElementById('hint').style.display = 'none';">
+                🙈
+                <div class="description2">ヒントを隠します</div>
+            </button>
+
+            <div id="hint">@Html.Raw(@Model.SelectedLesson.Hint)</div>
+        </div>
+
+    </div>
+
+    <br />
+
+<!-- 解答するボタンのフォーム -->
+    <form method="post" asp-controller="Lessons" asp-action="Answer">
+    <textarea name="answer" placeholder="解答を入力してください&#10;(例) SELECT * FROM books" rows="3" style="width: 100%;"></textarea>
+        <input type="hidden" name="lessonId" value="@Model.SelectedLesson.LessonId" />
+        <div class="button-group">
+            <input type="submit" value="解答する" class="btn btn--cubic">
+    </form>
+    <form method="post" asp-controller="Lessons" asp-action="GiveUp">
+        <input type="hidden" id="selected-lesson-id" name="lessonId" value=@Model.SelectedLesson.LessonId />
+        <input type="submit" value="あきらめる" class="btn btn--cubic">
+    </form>
+       </div>
+
+    <br />
+
+</body>
+
+<style>
+    /*タイトルの大きさ*/
+    h1{
+        font-size:44px;
+        text-align:left;
+        transform: skewX(-15deg);
+        line-height: 2.0;
+    }
+
+    .description-block1, .description-block2, .Hint-block {
+        font-size: 22px;
+    }
+
+    /*文章関連*/
+    p{
+        font-size: 22px;
+        line-height: 1.7;
+    }
+
+    b{
+        font-size: 25px;
+    }
+
+    .Title-block {
+        line-height: 12.0;
+        position: relative;
+        align-items: center;
+    }
+
+    /*ヒント*/
+    .Hint-block {
+        line-height: 1.5;
+        position: relative;
+    }
+
+    #hint {
+        display: none;
+    }
+
+    input {
+        font-size: 23px;
+        background-color: #fff3b8;
+        color: darkblue;
+        border: none;
+        font-weight: bold;
+    }
+
+    /*ツールチップ*/
+    .hint1 {
+        position: relative;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+        .hint1 button {
+            margin: 0;
+            padding: 0;
+        }
+
+    .description1, .description2 {
+        display: none;
+        position: absolute;
+        padding: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1.6em;
+        color: #e4007f;
+        border-radius: 5px;
+        background: white;
+        width: 170px;
+        font-family: monospace;
+    }
+
+        .description1:before, .description2:before {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            border: 15px solid transparent;
+            border-top: 15px solid white;
+            margin-left: -15px;
+        }
+
+    .hint1:hover .description1 {
+        display: inline-block;
+        top: -60px;
+        left: -65px;
+    }
+
+    .hint2:hover .description2 {
+        display: inline-block;
+        top: -60px;
+        left: 120px;
+    }
+
+    /* 解答box */
+    input[type="text"], textarea {
+        width: 70%;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-family: Ricty Diminished;
+        letter-spacing: 1.7px;
+    }
+
+    /*ボタン*/
+    .button-group {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .btn {
+        font-size:22px;
+        width: 13rem;
+        height: 2.7rem;
+    }
+
+    /*booksテーブル*/
+    thead,tbody{
+        color:white;
+        font-size:20px;
+    }
+
+    th{
+        font-size: 23px;
+    }
+</style>

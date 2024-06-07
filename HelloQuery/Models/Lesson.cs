@@ -5,7 +5,7 @@
         public int LessonId { get; set; }
 
         // メインカテゴリ
-        public string Categry { get; set; }
+        public string Category { get; set; }
 
         // 問題の題名
         public string Title { get; set; }
@@ -27,5 +27,7 @@
 
         // ナビゲーションプロパティ
         public List<UserLesson> UserLesson { get; set; }
+
+        public virtual ICollection<LessonAnswer> LessonAnswer { get; set; }
     }
 }

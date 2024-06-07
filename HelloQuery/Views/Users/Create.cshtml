@@ -4,40 +4,86 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1 class="text-center">新規会員登録</h1>
 
-<h4>User</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+<form asp-action="Create" asp-controller="Users">
+    <div class="text-center">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+        <div class="form-group">
+            <label asp-for="UserName" class="control-label">ニックネーム</label>
+			<p class="notion"><b>※25文字以内で入力してください</b></p>
+            <p><input asp-for="UserName" class=" text-center" /></p>
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <p><input asp-for="Email" class="text-center" /></p>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Password" class="control-label"></label>
+			<p class="notion"><b>※6文字以上で入力してください</b></p>
+            <p><input asp-for="Password" class="text-center" /></p>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <!--パスワード再入力フォーム-->
+        <div class="form-group">
+            <label asp-for="ConfirmPassword" class="control-label"></label>
+            <p><input asp-for="ConfirmPassword" class="text-center" /></p>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <br />
+
+        <div class="text-center">
+            <button type="submit" class="btn btn--cubic">作成</button>
+        </div>
+</form>
+
+<br />
+
+<div class="text-center">
+    <a href=@Url.Action("Index","Home") class="btn btn--cubic">ホームに戻る</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+<style>
+    /*入力欄*/
+    input {
+        width: 370px;
+        height: 30px;
+    }
+
+    .btn {
+        width: 13rem;
+        height: 2.7rem;
+    }
+
+    .control-label{
+        font-size: 23px;
+    }
+
+    .notion{
+        font-size: 20px;
+        color:yellow;
+    }
+
+    .text-danger {
+        display: flex;
+        justify-content: center;
+        font-size: 20px;
+        color: salmon;
+        font-weight: bold;
+        font-family: monospace;
+    }
+</style>
