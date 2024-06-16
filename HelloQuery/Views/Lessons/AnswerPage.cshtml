@@ -47,32 +47,28 @@
 
 <style>
     .container {
-        position: relative;
+        width: 100vw;
+        display: flex;
     }
 
     .k-k {
-        width: 80%;
+        flex: 0 0 75%;
     }
 
     .side {
-        position: absolute;
-        top: -18vw;
-        right: -7.9vw;
-        height: 100%;
+        flex: 0 0 25%;
+        position: relative;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        overflow-y: auto; /* 必要に応じてスクロールバーを表示 */
     }
 
     .side-in {
         background-color: #000033;
         color: #fafad2;
-        position: absolute;
-        top: 17vw;
-        right: 1px;
-        width: 23vw;
-    }
-
-    li {
-        font-size: 22px;
-        line-height: 3.0;
+        top: calc(100% - 1.2vw);
+        width: 100%;
     }
 
     /*ポップアップメッセージ*/

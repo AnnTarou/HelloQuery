@@ -50,28 +50,32 @@
 
 <style>
     .container {
-        position: relative; 
+        width: 100vw; 
+        display: flex; 
     }
 
     .kaitou {
-        width: 80%;
-        float: left;
+        flex: 0 0 75%; /* kaitou要素の幅をコンテナに対し75%に設定 */
     }
 
     .side {
-        position: absolute;
+        flex: 0 0 25%; /* side要素の幅をコンテナに対し25%に設定 */
+        position: relative;
         top: 0;
+        bottom: 0;
         right: 0;
-        height: 100%;
+        overflow-y: auto; /* 必要に応じてスクロールバーを表示 */
     }
 
     .side-in {
 		background-color: #000033;
         color: #fafad2;
-        position: absolute;
         top: calc(100% - 1.2vw);
-        left: calc(100% - 15vw);
-        width: 23vw;
+        width: 100%;
+    }
+
+    .side-in li {
+       font-size: 20px;
     }
 
     .lesson{
