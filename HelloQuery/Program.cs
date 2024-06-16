@@ -1,5 +1,4 @@
 ﻿using HelloQuery.Data;
-
 using Microsoft.EntityFrameworkCore;
 namespace HelloQuery
 {
@@ -22,13 +21,16 @@ namespace HelloQuery
 
             var app = builder.Build();
 
-            // シードデータを初期化
+            // DBテーブルデータ初期値は設定済みの為現在はコメントアウト
+            // DB移行時はこの部分を有効にする
+            /*
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
 
                 SeedData.Initialize(services);
             }
+            */
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

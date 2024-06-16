@@ -3,6 +3,8 @@ using HelloQuery.Models;
 
 namespace HelloQuery.Data
 {
+    // このクラスはDBテーブル初期設定の為のクラスなので、現在プロジェクトから除外しています
+    // DB移行などで適用させたい場合はProgram.csの呼び出し部分のコメントアウトを解除してください
     public class SeedData
     {
         public static void Initialize(IServiceProvider serviceProvider)
